@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.atlas</groupId>
+        <artifactId>atlas-rag-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>atlas-mcp</artifactId>
+    <name>Atlas MCP — stdio MCP server</name>
+    <description>
+        Runnable MCP server exposing ask_atlas over stdio transport.
+        STATUS: not yet implemented — see docs/PLAN.md, Step 10.
+    </description>
+
+</project>
