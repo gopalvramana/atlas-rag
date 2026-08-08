@@ -65,6 +65,73 @@ commit that doesn't touch these two files as a sign the commit isn't actually fi
 
 ---
 
+## ADR-010 — Chunks-only schema for v1, add tables incrementally
+**Decision:** V1 migration creates only the `chunks` table. `ingestion_runs` and `eval_runs` will be added via new migrations when those modules are built.
+**Reason:** Build only what the current step needs — no premature schema.
+
+---
+
+## ADR-011 — DocumentFetcher: list() + fetchContent() separation
+**Decision:** `DocumentFetcher` interface splits listing (lightweight metadata) from content download (one file at a time).
+**Reason:** Downloading all file contents upfront is wasteful for large document sets. The pipeline processes one document at a time: fetch → parse → chunk → embed → store.
+
+---
+
+## ADR-012 — FetchedDocument carries generic metadata map
+**Decision:** `FetchedDocument` uses `Map<String, String> metadata` instead of typed fields like `version`.
+**Reason:** Version is Spring AI specific. Other sources (S3, Jira, Confluence) have different metadata. A generic map keeps the interface source-agnostic.
+
+---
+
+## ADR-013 — ConfigurationProperties over @Value for structured config
+**Decision:** `GitHubProperties` record with `@ConfigurationProperties` instead of `@Value` annotations.
+**Reason:** `@Value` cannot bind YAML lists. `@ConfigurationProperties` handles structured/nested config cleanly.
+
+---
+
+## ADR-014 — UUID primary key for chunks table
+**Decision:** `UUID` with `gen_random_uuid()` instead of `BIGSERIAL`.
+**Reason:** Decouples ID generation from the database — IDs can be created in application code before insert, simplifying testing and batch operations.
+**Trade-off:** UUIDs are 16 bytes vs 8, slightly slower to index. Acceptable for our scale.
+
+---
+
+## ADR-015 — No tsvector column in v1 schema
+**Decision:** The `chunks` table starts without a `content_tsv` tsvector column or GIN index. BM25 full-text search will be added in a later migration.
+**Reason:** Build vector-only search first (Phase A), observe where it fails, then add BM25 (Phase B), then combine as hybrid search (Phase C). Learning by experiencing the problem — not pre-building the solution.
+
+---
+
+## ADR-016 — DocumentParser interface with byte[] input
+**Decision:** `DocumentParser.parse(byte[] rawContent)` instead of `parse(String rawContent)`.
+**Reason:** Text-based formats (`.adoc`, `.md`) and binary formats (PDF, Word) must share the same interface (Liskov Substitution). `byte[]` is the universal input — text parsers convert to String internally.
+
+---
+
+## ADR-017 — DocumentParser.supports() for strategy selection
+**Decision:** Each `DocumentParser` implementation declares `boolean supports(String filename)`. The caller loops all parsers and picks the matching one (Strategy pattern).
+**Reason:** Avoids a factory with if/else chains. Adding a new format = adding a new `@Component` implementation. Spring auto-discovers all implementations via `List<DocumentParser>`.
+
+---
+
+## ADR-018 — Separate atlas_rag database
+**Decision:** New `atlas_rag` database in the existing `roms-postgres` container, not reusing the old `atlas` database.
+**Reason:** Keeps old project data untouched. Clean separation for the rebuild.
+
+---
+
+## ADR-019 — GitHub API over git clone for document ingestion
+**Decision:** Fetch `.adoc` files via GitHub Contents API, not by cloning the Spring AI repository.
+**Reason:** In production, ingestion sources are APIs (GitHub, S3, Confluence), not local clones. Cloning entire repos doesn't scale — you only need the document content, not the git history.
+
+---
+
+## ADR-020 — Progressive search strategy: vector-only → BM25 → hybrid
+**Decision:** Build search in three phases: (A) vector-only, (B) BM25-only, (C) hybrid with RRF.
+**Reason:** Experiencing where vector search fails firsthand makes the case for BM25 concrete. Produces a strong interview story: "I observed X failure, researched alternatives, added BM25, combined with RRF."
+
+---
+
 ## ADR-009 — Reranking decision — PENDING, decide properly this time
 
 The previous attempt added a Cohere `rerank-english-v3.0` cross-encoder step after RRF

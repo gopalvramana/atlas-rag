@@ -13,10 +13,40 @@
 
     <artifactId>atlas-ingestion</artifactId>
     <name>Atlas Ingestion — Fetch, chunk, embed, store</name>
-    <description>
-        CLI pipeline: fetches Spring AI docs from GitHub, chunks content,
-        generates embeddings via OpenAI, loads into PostgreSQL + pgvector.
-        STATUS: not yet implemented — see docs/PLAN.md, Step 3.
-    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.atlas</groupId>
+            <artifactId>atlas-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-model-openai</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

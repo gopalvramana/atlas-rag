@@ -10,9 +10,9 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 
 | # | Module | Exit condition | Status | Commit |
 |---|---|---|---|---|
-| 1 | `infra` (Flyway migrations) | Migration applies cleanly; `\d chunks` shows correct schema | ⬜ Not started | |
-| 2 | `atlas-core` | Domain model compiles; unit tests pass | ⬜ Not started | |
-| 3 | `atlas-ingestion` | Chunks loaded into DB (target: ~570 across 3 versions) | ⬜ Not started | |
+| 1 | `infra` (Flyway migrations) | Migration applies cleanly; `\d chunks` shows correct schema | ✅ Done | |
+| 2 | `atlas-core` | Domain model compiles; unit tests pass | ✅ Done | |
+| 3 | `atlas-ingestion` | Chunks loaded into DB (target: ~570 across 3 versions) | 🟡 In progress | |
 | 4 | `atlas-retrieval` | Top-K retrieval correct for 10 hand-checked questions | ⬜ Not started | |
 | 5 | `atlas-api` (basic) | `POST /api/v1/ask` returns valid structured JSON for 10 test questions | ⬜ Not started | |
 | 6 | `atlas-api` (streaming) | SSE token stream verified | ⬜ Not started | |
@@ -23,10 +23,9 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 
 ## ✅ Done
 
-(nothing yet)
+- Step 1 — infra: V1 Flyway migration (chunks table only, no ingestion_runs/eval_runs yet), atlas_rag database created
+- Step 2 — atlas-core: Chunk JPA entity with builder pattern, pgvector embedding column
 
-## ⬜ Next
+## 🟡 In Progress
 
-Step 1 — infra. Design the Flyway migration before writing it: confirm the `chunks` /
-`ingestion_runs` / `eval_runs` schema against `docs/PLAN.md` Section 2.2, then create
-`V1__initial_schema.sql`.
+Step 3 — atlas-ingestion: DocumentFetcher/DocumentParser interfaces built, GitHubDocumentFetcher (multi-tag, lazy content loading), AsciiDocParser (AsciidoctorJ + Jsoup), Spring AI OpenAI embedding model configured and verified. Next: chunker, then pipeline orchestrator to wire fetch → parse → chunk → embed → store.
