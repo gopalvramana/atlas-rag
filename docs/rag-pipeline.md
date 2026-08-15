@@ -20,7 +20,9 @@ module or class in the codebase.
     'clusterBorder': '#b0b0d0',
     'titleColor': '#1a1a2e',
     'edgeLabelBackground': '#ffffff',
-    'fontSize': '14px'
+    'fontSize': '18px',
+    'nodeSpacing': 30,
+    'rankSpacing': 40
   }
 }}%%
 
