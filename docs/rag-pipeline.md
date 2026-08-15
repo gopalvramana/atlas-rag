@@ -7,104 +7,113 @@ module or class in the codebase.
 %%{init: {
   'theme': 'base',
   'themeVariables': {
-    'primaryColor': '#1a1a2e',
-    'primaryTextColor': '#e0e0e0',
-    'primaryBorderColor': '#3a3a5c',
-    'lineColor': '#6c63ff',
-    'secondaryColor': '#16213e',
-    'tertiaryColor': '#0f3460',
+    'primaryColor': '#e8eaf6',
+    'primaryTextColor': '#1a1a2e',
+    'primaryBorderColor': '#7c7cba',
+    'lineColor': '#5046e5',
+    'secondaryColor': '#e3f2fd',
+    'tertiaryColor': '#f3e5f5',
+    'background': '#ffffff',
+    'mainBkg': '#e8eaf6',
+    'nodeBorder': '#7c7cba',
+    'clusterBkg': '#f5f5ff',
+    'clusterBorder': '#b0b0d0',
+    'titleColor': '#1a1a2e',
+    'edgeLabelBackground': '#ffffff',
     'fontSize': '14px'
   }
 }}%%
 
 flowchart TD
-    %% ─── QUERY ENTRY ───
     Q[/"🔍 User Query"/]
     Q --> QR
 
-    %% ─── QUERY PROCESSING ───
-    subgraph QUERY_PROC["Query Processing"]
-        QR["Query Router<br/><small>route by intent</small>"]
-        QT["Query Transformation<br/><small>rewrite · expand · decompose</small>"]
+    subgraph QUERY_PROC["🧠 Query Processing"]
+        QR["Query Router\nroute by intent"]
+        QT["Query Transformation\nrewrite · expand · decompose"]
         QR --> QT
     end
 
-    %% ─── DUAL RETRIEVAL ───
-    QT --> RETRIEVAL
+    QT --> VS & BM
 
-    subgraph RETRIEVAL["Dual Retrieval"]
+    subgraph RETRIEVAL["🔎 Dual Retrieval"]
         direction LR
-        VS["Vector Search<br/><small>pgvector · cosine similarity</small>"]
-        BM["BM25 Search<br/><small>tsvector · full-text</small>"]
+        VS["Vector Search\npgvector · cosine"]
+        BM["BM25 Search\ntsvector · full-text"]
     end
 
-    %% ─── RESULT MERGING ───
-    RETRIEVAL --> MERGE
+    VS & BM --> FU
 
-    subgraph MERGE["Result Merging & Refinement"]
-        FU["Fusion<br/><small>Reciprocal Rank Fusion</small>"]
-        RR["Reranker<br/><small>Cohere cross-encoder</small>"]
-        MF["Metadata Filter<br/><small>version · source · type</small>"]
-        PC["Parent/Child Context<br/><small>expand to surrounding chunks</small>"]
-        CC["Context Compression<br/><small>remove redundancy</small>"]
+    subgraph MERGE["⚙️ Result Merging & Refinement"]
+        FU["Fusion\nReciprocal Rank Fusion"]
+        RR["Reranker\nCohere cross-encoder"]
+        MF["Metadata Filter\nversion · source · type"]
+        PC["Parent/Child Context\nexpand to surrounding chunks"]
+        CC["Context Compression\nremove redundancy"]
         FU --> RR --> MF --> PC --> CC
     end
 
-    %% ─── GENERATION ───
-    CC --> GEN
+    CC --> LLM
 
-    subgraph GEN["LLM Generation"]
-        LLM["Claude<br/><small>Haiku for tools · Sonnet for answer</small>"]
+    subgraph GEN["🤖 LLM Generation"]
+        LLM["Claude\nHaiku for tools · Sonnet for answer"]
     end
 
-    %% ─── VALIDATION ───
-    LLM --> VALID
+    LLM --> CV & GD & CF
 
-    subgraph VALID["Output Validation"]
+    subgraph VALID["✔️ Output Validation"]
         direction LR
-        CV["Citation<br/>Validation"]
-        GD["Guardrail<br/>Check"]
-        CF["Confidence<br/>Score"]
+        CV["Citation\nValidation"]
+        GD["Guardrail\nCheck"]
+        CF["Confidence\nScore"]
     end
 
-    %% ─── OUTPUT ───
-    VALID --> ANS[/"✅ Answer"/]
+    CV & GD & CF --> ANS[/"✅ Answer"/]
 
-    %% ─── POST-PROCESSING ───
-    ANS --> POST
+    ANS --> EV & OB
 
-    subgraph POST["Post-Processing"]
+    subgraph POST["📊 Post-Processing"]
         direction LR
-        EV["Evaluation<br/><small>evals as CI gate</small>"]
-        OB["Observability<br/><small>latency · tokens · scores</small>"]
+        EV["Evaluation\nevals as CI gate"]
+        OB["Observability\nlatency · tokens · scores"]
     end
 
-    %% ─── INGESTION (separate pipeline) ───
-    subgraph INGEST["Document Ingestion Pipeline"]
+    subgraph INGEST["📥 Document Ingestion Pipeline"]
         direction LR
-        SRC["Source<br/><small>GitHub API</small>"]
-        PARSE["Parse<br/><small>AsciidoctorJ + Jsoup</small>"]
-        CHUNK["Chunk<br/><small>512-token sliding window</small>"]
-        EMBED["Embed<br/><small>OpenAI text-embedding-3-small</small>"]
-        STORE[("PostgreSQL<br/>+ pgvector")]
+        SRC["Source\nGitHub API"]
+        PARSE["Parse\nAsciidoctorJ + Jsoup"]
+        CHUNK["Chunk\n512-token window"]
+        EMBED["Embed\ntext-embedding-3-small"]
+        STORE[("PostgreSQL\n+ pgvector")]
         SRC --> PARSE --> CHUNK --> EMBED --> STORE
     end
 
-    %% ─── DATA FLOW ───
     STORE -.->|"serves"| VS
     STORE -.->|"serves"| BM
 
-    %% ─── MODULE MAPPING ───
-    subgraph MODULES["Module Mapping"]
+    subgraph MODULES["📦 Module Mapping"]
         direction LR
-        M1["atlas-core<br/><small>domain model</small>"]
-        M2["atlas-ingestion<br/><small>fetch · parse · chunk · embed</small>"]
-        M3["atlas-retrieval<br/><small>vector + BM25 + RRF</small>"]
-        M4["atlas-agent<br/><small>ReAct · tools · prompts</small>"]
-        M5["atlas-api<br/><small>REST + SSE</small>"]
-        M6["atlas-evals<br/><small>CI gate</small>"]
-        M7["atlas-mcp<br/><small>stdio server</small>"]
+        M1["atlas-core\ndomain model"]
+        M2["atlas-ingestion\nfetch · parse · chunk · embed"]
+        M3["atlas-retrieval\nvector + BM25 + RRF"]
+        M4["atlas-agent\nReAct · tools · prompts"]
+        M5["atlas-api\nREST + SSE"]
+        M6["atlas-evals\nCI gate"]
+        M7["atlas-mcp\nstdio server"]
     end
+
+    style Q fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
+    style ANS fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
+    style LLM fill:#e3f2fd,stroke:#1976d2,color:#1a1a2e
+    style VS fill:#e8eaf6,stroke:#5046e5,color:#1a1a2e
+    style BM fill:#e8eaf6,stroke:#5046e5,color:#1a1a2e
+    style FU fill:#f3e5f5,stroke:#8e24aa,color:#1a1a2e
+    style RR fill:#f3e5f5,stroke:#8e24aa,color:#1a1a2e
+    style STORE fill:#fff3e0,stroke:#f57c00,color:#1a1a2e
+    style SRC fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
+    style PARSE fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
+    style CHUNK fill:#fff9c4,stroke:#f9a825,color:#1a1a2e
+    style EMBED fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
 ```
 
 ## Phase Build Order
