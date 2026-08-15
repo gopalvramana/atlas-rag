@@ -3,120 +3,87 @@
 This diagram is the guide for the entire system. Every component here maps to a
 module or class in the codebase.
 
+---
+
+## Query Pipeline
+
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#e8eaf6',
-    'primaryTextColor': '#1a1a2e',
-    'primaryBorderColor': '#7c7cba',
-    'lineColor': '#5046e5',
-    'secondaryColor': '#e3f2fd',
-    'tertiaryColor': '#f3e5f5',
-    'background': '#ffffff',
-    'mainBkg': '#e8eaf6',
-    'nodeBorder': '#7c7cba',
-    'clusterBkg': '#f5f5ff',
-    'clusterBorder': '#b0b0d0',
-    'titleColor': '#1a1a2e',
-    'edgeLabelBackground': '#ffffff',
-    'fontSize': '18px',
-    'nodeSpacing': 30,
-    'rankSpacing': 40
-  }
-}}%%
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#e8eaf6', 'primaryTextColor': '#1a1a2e',
+  'primaryBorderColor': '#7c7cba', 'lineColor': '#5046e5',
+  'clusterBkg': '#f5f5ff', 'clusterBorder': '#b0b0d0',
+  'edgeLabelBackground': '#ffffff', 'fontSize': '16px'
+}}}%%
 
 flowchart TD
-    Q[/"🔍 User Query"/]
-    Q --> QR
+    Q([" 🔍 User Query "]):::entry --> QR
+    QR["Query Router"] --> QT["Query Transformation"]
+    QT --> VS["Vector Search\npgvector · cosine"]
+    QT --> BM["BM25 Search\ntsvector · full-text"]
+    VS --> FU["Fusion — RRF"]
+    BM --> FU
+    FU --> RR["Reranker\nCohere cross-encoder"]
+    RR --> MF["Metadata Filter"]
+    MF --> PC["Parent/Child Context"]
+    PC --> CC["Context Compression"]
+    CC --> LLM(["🤖 Claude LLM\nHaiku for tools · Sonnet for answer"]):::llm
+    LLM --> CV["Citation Validation"]
+    LLM --> GD["Guardrail Check"]
+    LLM --> CF["Confidence Score"]
+    CV --> ANS([" ✅ Answer "]):::entry
+    GD --> ANS
+    CF --> ANS
+    ANS --> EV["Evaluation"]
+    ANS --> OB["Observability"]
 
-    subgraph QUERY_PROC["🧠 Query Processing"]
-        QR["Query Router\nroute by intent"]
-        QT["Query Transformation\nrewrite · expand · decompose"]
-        QR --> QT
-    end
-
-    QT --> VS & BM
-
-    subgraph RETRIEVAL["🔎 Dual Retrieval"]
-        direction LR
-        VS["Vector Search\npgvector · cosine"]
-        BM["BM25 Search\ntsvector · full-text"]
-    end
-
-    VS & BM --> FU
-
-    subgraph MERGE["⚙️ Result Merging & Refinement"]
-        FU["Fusion\nReciprocal Rank Fusion"]
-        RR["Reranker\nCohere cross-encoder"]
-        MF["Metadata Filter\nversion · source · type"]
-        PC["Parent/Child Context\nexpand to surrounding chunks"]
-        CC["Context Compression\nremove redundancy"]
-        FU --> RR --> MF --> PC --> CC
-    end
-
-    CC --> LLM
-
-    subgraph GEN["🤖 LLM Generation"]
-        LLM["Claude\nHaiku for tools · Sonnet for answer"]
-    end
-
-    LLM --> CV & GD & CF
-
-    subgraph VALID["✔️ Output Validation"]
-        direction LR
-        CV["Citation\nValidation"]
-        GD["Guardrail\nCheck"]
-        CF["Confidence\nScore"]
-    end
-
-    CV & GD & CF --> ANS[/"✅ Answer"/]
-
-    ANS --> EV & OB
-
-    subgraph POST["📊 Post-Processing"]
-        direction LR
-        EV["Evaluation\nevals as CI gate"]
-        OB["Observability\nlatency · tokens · scores"]
-    end
-
-    subgraph INGEST["📥 Document Ingestion Pipeline"]
-        direction LR
-        SRC["Source\nGitHub API"]
-        PARSE["Parse\nAsciidoctorJ + Jsoup"]
-        CHUNK["Chunk\n512-token window"]
-        EMBED["Embed\ntext-embedding-3-small"]
-        STORE[("PostgreSQL\n+ pgvector")]
-        SRC --> PARSE --> CHUNK --> EMBED --> STORE
-    end
-
-    STORE -.->|"serves"| VS
-    STORE -.->|"serves"| BM
-
-    subgraph MODULES["📦 Module Mapping"]
-        direction LR
-        M1["atlas-core\ndomain model"]
-        M2["atlas-ingestion\nfetch · parse · chunk · embed"]
-        M3["atlas-retrieval\nvector + BM25 + RRF"]
-        M4["atlas-agent\nReAct · tools · prompts"]
-        M5["atlas-api\nREST + SSE"]
-        M6["atlas-evals\nCI gate"]
-        M7["atlas-mcp\nstdio server"]
-    end
-
-    style Q fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
-    style ANS fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
-    style LLM fill:#e3f2fd,stroke:#1976d2,color:#1a1a2e
-    style VS fill:#e8eaf6,stroke:#5046e5,color:#1a1a2e
-    style BM fill:#e8eaf6,stroke:#5046e5,color:#1a1a2e
-    style FU fill:#f3e5f5,stroke:#8e24aa,color:#1a1a2e
-    style RR fill:#f3e5f5,stroke:#8e24aa,color:#1a1a2e
-    style STORE fill:#fff3e0,stroke:#f57c00,color:#1a1a2e
-    style SRC fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
-    style PARSE fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
-    style CHUNK fill:#fff9c4,stroke:#f9a825,color:#1a1a2e
-    style EMBED fill:#dcedc8,stroke:#7cb342,color:#1a1a2e
+    classDef entry fill:#dcedc8,stroke:#7cb342,color:#1a1a2e,stroke-width:2px
+    classDef llm fill:#e3f2fd,stroke:#1976d2,color:#1a1a2e,stroke-width:2px
 ```
+
+---
+
+## Ingestion Pipeline
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#e8eaf6', 'primaryTextColor': '#1a1a2e',
+  'primaryBorderColor': '#7c7cba', 'lineColor': '#43a047',
+  'edgeLabelBackground': '#ffffff', 'fontSize': '16px'
+}}}%%
+
+flowchart LR
+    SRC["📥 Source\nGitHub API"]:::done --> PARSE["📄 Parse\nAsciidoctorJ + Jsoup"]:::done
+    PARSE --> CHUNK["✂️ Chunk\n512-token sliding window"]:::next
+    CHUNK --> EMBED["🧮 Embed\ntext-embedding-3-small"]:::done
+    EMBED --> STORE[("🗄️ PostgreSQL\n+ pgvector")]:::store
+
+    classDef done fill:#dcedc8,stroke:#7cb342,color:#1a1a2e,stroke-width:2px
+    classDef next fill:#fff9c4,stroke:#f9a825,color:#1a1a2e,stroke-width:2px
+    classDef store fill:#fff3e0,stroke:#f57c00,color:#1a1a2e,stroke-width:2px
+```
+
+---
+
+## Module Mapping
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#e8eaf6', 'primaryTextColor': '#1a1a2e',
+  'primaryBorderColor': '#7c7cba', 'lineColor': '#5046e5',
+  'edgeLabelBackground': '#ffffff', 'fontSize': '16px'
+}}}%%
+
+flowchart LR
+    CORE["atlas-core\n📦 domain model"] --> ING["atlas-ingestion\n📥 fetch · parse · chunk · embed"]
+    CORE --> RET["atlas-retrieval\n🔎 vector + BM25 + RRF"]
+    CORE --> AGENT["atlas-agent\n🤖 ReAct · tools · prompts"]
+    AGENT --> API["atlas-api\n🌐 REST + SSE"]
+    RET --> AGENT
+    API --> MCP["atlas-mcp\n🔌 stdio server"]
+    CORE --> EVALS["atlas-evals\n📊 CI gate"]
+```
+
+---
 
 ## Phase Build Order
 
