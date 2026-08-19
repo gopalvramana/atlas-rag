@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
-@Component
+// @Component — disabled; use IngestionRunner instead
 public class EmbeddingTest implements CommandLineRunner {
 
     private final EmbeddingModel embeddingModel;

@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
-@Order(0)
+// @Component — disabled; use IngestionRunner instead
 public class FetcherTest implements CommandLineRunner {
 
     private final DocumentFetcher documentFetcher;

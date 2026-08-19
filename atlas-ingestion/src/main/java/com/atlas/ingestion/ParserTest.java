@@ -11,8 +11,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-@Component
-@Order(1)
+// @Component — disabled; use IngestionRunner instead
 public class ParserTest implements CommandLineRunner {
 
     private final List<DocumentParser> parsers;

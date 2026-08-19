@@ -132,6 +132,19 @@ commit that doesn't touch these two files as a sign the commit isn't actually fi
 
 ---
 
+## ADR-021 — SlidingWindowChunker with jtokkit cl100k_base
+**Decision:** Token-based sliding window chunker — 512-token window, 64-token overlap, using jtokkit `cl100k_base` encoding.
+**Reason:** `cl100k_base` is the same tokenizer used by OpenAI's `text-embedding-3-small`. Token-level splitting ensures each chunk fits within the embedding model's context window precisely. Overlap (64 tokens ≈ 12.5%) prevents information loss at chunk boundaries.
+**Trade-off:** Character or sentence-based splitting would be simpler but can't guarantee token-count accuracy. Token-based splitting may cut mid-word, but the embedding model handles subword tokens natively.
+
+---
+
+## ADR-022 — Externalize chunker config via @ConfigurationProperties
+**Decision:** `ChunkerProperties` record with `@ConfigurationProperties(prefix = "atlas.chunker")` for `windowSize` and `overlap`.
+**Reason:** Same pattern as `GitHubProperties` (ADR-013). Chunk size is a tuning parameter — externalizing to YAML allows experimentation without code changes.
+
+---
+
 ## ADR-009 — Reranking decision — PENDING, decide properly this time
 
 The previous attempt added a Cohere `rerank-english-v3.0` cross-encoder step after RRF

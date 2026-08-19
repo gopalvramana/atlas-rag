@@ -1,6 +1,5 @@
 package com.atlas.core.model;
 
-import com.pgvector.PGvector;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +25,7 @@ public class Chunk {
     private String content;
 
     @Column(nullable = false, columnDefinition = "vector(1536)")
-    private PGvector embedding;
+    private String embedding;
 
     @Column(name = "content_hash", nullable = false, length = 64)
     private String contentHash;
@@ -60,7 +59,7 @@ public class Chunk {
         return content;
     }
 
-    public PGvector getEmbedding() {
+    public String getEmbedding() {
         return embedding;
     }
 
@@ -105,7 +104,7 @@ public class Chunk {
             return this;
         }
 
-        public Builder embedding(PGvector embedding) {
+        public Builder embedding(String embedding) {
             chunk.embedding = embedding;
             return this;
         }

@@ -28,4 +28,11 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 
 ## 🟡 In Progress
 
-Step 3 — atlas-ingestion: DocumentFetcher/DocumentParser interfaces built, GitHubDocumentFetcher (multi-tag, lazy content loading), AsciiDocParser (AsciidoctorJ + Jsoup), Spring AI OpenAI embedding model configured and verified. Next: chunker, then pipeline orchestrator to wire fetch → parse → chunk → embed → store.
+Step 3 — atlas-ingestion: All five pipeline components individually built and tested:
+- DocumentFetcher interface + GitHubDocumentFetcher (multi-tag, lazy content loading via list/fetchContent)
+- DocumentParser interface + AsciiDocParser (AsciidoctorJ + Jsoup)
+- DocumentChunker interface + SlidingWindowChunker (512-token window, 64-token overlap, jtokkit cl100k_base)
+- Spring AI OpenAI embedding model configured and verified (text-embedding-3-small, 1536 dims)
+- pgvector vector store configured
+
+Next: pipeline orchestrator to wire fetch → parse → chunk → embed → store, then verify chunks land in DB.
