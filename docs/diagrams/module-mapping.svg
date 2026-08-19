@@ -1,0 +1,79 @@
+<svg viewBox="0 0 740 280" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: 600 14px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #1a1a2e; }
+    .subtitle { font: 400 10px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #656d76; }
+    .mod-name { font: 700 11.5px 'SF Mono', 'Cascadia Code', 'Consolas', monospace; fill: #1a1a2e; }
+    .mod-desc { font: 400 9.5px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #656d76; }
+    .arrow { stroke: #5046e5; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#5046e5" />
+    </marker>
+  </defs>
+  <rect width="740" height="280" fill="#ffffff" rx="12" />
+
+  <!-- Title -->
+  <text x="24" y="24" class="title">Module Mapping</text>
+  <text x="24" y="38" class="subtitle">Dependency graph between Maven modules</text>
+
+  <!-- atlas-core (center left) -->
+  <rect x="24" y="100" width="140" height="60" fill="rgba(80,70,229,0.08)" stroke="#5046e5" stroke-width="1.5" rx="8" />
+  <text x="94" y="126" class="mod-name" text-anchor="middle">atlas-core</text>
+  <text x="94" y="142" class="mod-desc" text-anchor="middle">domain model</text>
+
+  <!-- atlas-ingestion -->
+  <rect x="220" y="56" width="150" height="48" fill="rgba(63,185,80,0.08)" stroke="#3fb950" stroke-width="1.5" rx="8" />
+  <text x="295" y="78" class="mod-name" text-anchor="middle">atlas-ingestion</text>
+  <text x="295" y="93" class="mod-desc" text-anchor="middle">fetch · parse · chunk · embed</text>
+
+  <!-- atlas-retrieval -->
+  <rect x="220" y="120" width="150" height="48" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="8" />
+  <text x="295" y="142" class="mod-name" text-anchor="middle">atlas-retrieval</text>
+  <text x="295" y="157" class="mod-desc" text-anchor="middle">vector + BM25 + RRF</text>
+
+  <!-- atlas-evals -->
+  <rect x="220" y="184" width="150" height="48" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="8" />
+  <text x="295" y="206" class="mod-name" text-anchor="middle">atlas-evals</text>
+  <text x="295" y="221" class="mod-desc" text-anchor="middle">CI gate</text>
+
+  <!-- atlas-agent -->
+  <rect x="430" y="100" width="140" height="60" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="8" />
+  <text x="500" y="126" class="mod-name" text-anchor="middle">atlas-agent</text>
+  <text x="500" y="142" class="mod-desc" text-anchor="middle">ReAct · tools · prompts</text>
+
+  <!-- atlas-api -->
+  <rect x="620" y="70" width="100" height="48" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="8" />
+  <text x="670" y="92" class="mod-name" text-anchor="middle">atlas-api</text>
+  <text x="670" y="107" class="mod-desc" text-anchor="middle">REST + SSE</text>
+
+  <!-- atlas-mcp -->
+  <rect x="620" y="138" width="100" height="48" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="8" />
+  <text x="670" y="160" class="mod-name" text-anchor="middle">atlas-mcp</text>
+  <text x="670" y="175" class="mod-desc" text-anchor="middle">stdio server</text>
+
+  <!-- Arrows: core → ingestion, retrieval, evals -->
+  <line x1="164" y1="116" x2="218" y2="84" class="arrow" />
+  <line x1="164" y1="130" x2="218" y2="140" class="arrow" />
+  <line x1="164" y1="145" x2="218" y2="200" class="arrow" />
+
+  <!-- Arrows: core → agent -->
+  <line x1="164" y1="130" x2="428" y2="130" class="arrow" />
+
+  <!-- Arrow: retrieval → agent -->
+  <line x1="370" y1="140" x2="428" y2="130" class="arrow" />
+
+  <!-- Arrow: agent → api -->
+  <line x1="570" y1="118" x2="618" y2="98" class="arrow" />
+
+  <!-- Arrow: api → mcp -->
+  <line x1="670" y1="118" x2="670" y2="136" class="arrow" />
+
+  <!-- Legend -->
+  <rect x="24" y="252" width="10" height="10" fill="rgba(63,185,80,0.08)" stroke="#3fb950" stroke-width="1" rx="2" />
+  <text x="40" y="261" class="mod-desc">Built</text>
+  <rect x="80" y="252" width="10" height="10" fill="rgba(80,70,229,0.08)" stroke="#5046e5" stroke-width="1" rx="2" />
+  <text x="96" y="261" class="mod-desc">Core</text>
+  <rect x="130" y="252" width="10" height="10" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="2" />
+  <text x="146" y="261" class="mod-desc">Planned</text>
+</svg>

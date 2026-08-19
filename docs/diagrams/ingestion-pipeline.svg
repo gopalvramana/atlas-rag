@@ -1,0 +1,60 @@
+<svg viewBox="0 0 740 140" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: 600 14px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #1a1a2e; }
+    .subtitle { font: 400 10px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #656d76; }
+    .box-label { font: 600 12px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #1a1a2e; }
+    .box-detail { font: 400 9.5px 'SF Mono', 'Cascadia Code', 'Consolas', monospace; fill: #656d76; }
+    .arrow-text { font: 500 14px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #3fb950; }
+    .legend-text { font: 400 9.5px -apple-system, 'Segoe UI', system-ui, sans-serif; fill: #656d76; }
+  </style>
+  <rect width="740" height="140" fill="#ffffff" rx="10" />
+
+  <!-- Title -->
+  <text x="24" y="24" class="title">Ingestion Pipeline</text>
+  <text x="24" y="38" class="subtitle">offline — processes documents one at a time</text>
+
+  <!-- Legend -->
+  <rect x="540" y="12" width="10" height="10" fill="rgba(63,185,80,0.12)" stroke="#3fb950" stroke-width="1" rx="2" />
+  <text x="555" y="21" class="legend-text">Built</text>
+  <rect x="590" y="12" width="10" height="10" fill="rgba(210,153,34,0.12)" stroke="#d29922" stroke-width="1" rx="2" />
+  <text x="605" y="21" class="legend-text">Next</text>
+  <rect x="640" y="12" width="10" height="10" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="2" />
+  <text x="655" y="21" class="legend-text">Planned</text>
+
+  <!-- Fetch -->
+  <rect x="24" y="56" width="120" height="62" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5" rx="8" />
+  <text x="84" y="82" class="box-label" text-anchor="middle">Fetch</text>
+  <text x="84" y="100" class="box-detail" text-anchor="middle">GitHub API</text>
+
+  <!-- Arrow -->
+  <text x="156" y="92" class="arrow-text">→</text>
+
+  <!-- Parse -->
+  <rect x="172" y="56" width="120" height="62" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5" rx="8" />
+  <text x="232" y="82" class="box-label" text-anchor="middle">Parse</text>
+  <text x="232" y="100" class="box-detail" text-anchor="middle">AsciidoctorJ + Jsoup</text>
+
+  <!-- Arrow -->
+  <text x="304" y="92" class="arrow-text">→</text>
+
+  <!-- Chunk -->
+  <rect x="320" y="56" width="120" height="62" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5" rx="8" />
+  <text x="380" y="82" class="box-label" text-anchor="middle">Chunk</text>
+  <text x="380" y="100" class="box-detail" text-anchor="middle">512-tok window</text>
+
+  <!-- Arrow -->
+  <text x="452" y="92" class="arrow-text">→</text>
+
+  <!-- Embed -->
+  <rect x="468" y="56" width="120" height="62" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5" rx="8" />
+  <text x="528" y="82" class="box-label" text-anchor="middle">Embed</text>
+  <text x="528" y="100" class="box-detail" text-anchor="middle">text-emb-3-small</text>
+
+  <!-- Arrow -->
+  <text x="600" y="92" class="arrow-text">→</text>
+
+  <!-- Store -->
+  <rect x="616" y="56" width="100" height="62" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5" rx="8" />
+  <text x="666" y="82" class="box-label" text-anchor="middle">Store</text>
+  <text x="666" y="100" class="box-detail" text-anchor="middle">pgvector</text>
+</svg>
