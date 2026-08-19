@@ -5,45 +5,7 @@ without modifying existing code (Open/Closed Principle).
 
 ## Class Diagram
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {
-  'primaryColor': '#e8eaf6', 'primaryTextColor': '#1a1a2e',
-  'primaryBorderColor': '#7c7cba', 'lineColor': '#5046e5',
-  'edgeLabelBackground': '#ffffff', 'fontSize': '14px'
-}}}%%
-
-classDiagram
-    class DocumentParser {
-        <<interface>>
-        +supports(filename: String) boolean
-        +parse(rawContent: byte[]) String
-    }
-
-    class AsciiDocParser {
-        +supports(filename) boolean
-        +parse(rawContent) String
-    }
-
-    class MarkdownParser {
-        +supports(filename) boolean
-        +parse(rawContent) String
-    }
-
-    class PdfParser {
-        +supports(filename) boolean
-        +parse(rawContent) String
-    }
-
-    class IngestionPipeline {
-        -parsers: List~DocumentParser~
-        +run()
-    }
-
-    DocumentParser <|.. AsciiDocParser : implements
-    DocumentParser <|.. MarkdownParser : implements
-    DocumentParser <|.. PdfParser : implements
-    IngestionPipeline o-- DocumentParser : has many
-```
+![Strategy Pattern — DocumentParser](diagrams/strategy-pattern.svg)
 
 ## How it works
 
