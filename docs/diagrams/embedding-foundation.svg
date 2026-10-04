@@ -1,0 +1,35 @@
+<svg viewBox="0 0 740 120" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: 600 13px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .sub   { font: 400 9.5px 'SF Mono','Cascadia Code','Consolas',monospace; fill:#656d76; }
+    .lbl   { font: 600 12px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .arr   { font: 500 14px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#5046e5; }
+  </style>
+  <rect width="740" height="120" fill="#ffffff" rx="10"/>
+  <text x="24" y="22" class="title">Embedding Foundation</text>
+  <text x="24" y="37" style="font:400 10px -apple-system,'Segoe UI',sans-serif;fill:#656d76;">text → vector → similarity search</text>
+
+  <rect x="24"  y="52" width="110" height="56" fill="rgba(80,70,229,0.1)" stroke="#5046e5" stroke-width="1.5" rx="8"/>
+  <text x="79"  y="76" class="lbl" text-anchor="middle">Text</text>
+  <text x="79"  y="90" class="sub" text-anchor="middle">raw input</text>
+  <text x="148" y="84" class="arr">→</text>
+
+  <rect x="162" y="52" width="140" height="56" fill="rgba(80,70,229,0.1)" stroke="#5046e5" stroke-width="1.5" rx="8"/>
+  <text x="232" y="76" class="lbl" text-anchor="middle">Embedding Model</text>
+  <text x="232" y="90" class="sub" text-anchor="middle">text-emb-3-small</text>
+  <text x="316" y="84" class="arr">→</text>
+
+  <rect x="330" y="52" width="130" height="56" fill="rgba(80,70,229,0.1)" stroke="#5046e5" stroke-width="1.5" rx="8"/>
+  <text x="395" y="76" class="lbl" text-anchor="middle">Vector [1536]</text>
+  <text x="395" y="90" class="sub" text-anchor="middle">cosine similarity</text>
+  <text x="474" y="84" class="arr">→</text>
+
+  <rect x="488" y="52" width="110" height="56" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5" rx="8"/>
+  <text x="543" y="76" class="lbl" text-anchor="middle">PGVector</text>
+  <text x="543" y="90" class="sub" text-anchor="middle">HNSW index</text>
+  <text x="612" y="84" class="arr">→</text>
+
+  <rect x="626" y="52" width="108" height="56" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1.5" rx="8"/>
+  <text x="680" y="76" class="lbl" text-anchor="middle">Top-K</text>
+  <text x="680" y="90" class="sub" text-anchor="middle">ranked results</text>
+</svg>

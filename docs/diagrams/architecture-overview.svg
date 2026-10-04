@@ -1,0 +1,57 @@
+<svg viewBox="0 0 580 280" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .lbl  { font: 600 11px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .sub  { font: 400 9.5px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#656d76; }
+    .conn { stroke:#5046e5; stroke-width:1.5; fill:none; }
+    .tag  { font: 500 9px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#656d76; text-transform:uppercase; letter-spacing:.08em; }
+  </style>
+  <rect width="580" height="280" fill="#ffffff" rx="12"/>
+
+  <!-- Layer 1: Existing Strength -->
+  <rect x="140" y="12" width="300" height="44" fill="rgba(63,185,80,0.12)" stroke="#3fb950" stroke-width="1.5" rx="8"/>
+  <text x="290" y="31" class="lbl" text-anchor="middle">EXISTING STRENGTH</text>
+  <text x="290" y="47" class="sub" text-anchor="middle">Java · Spring · Cloud · Distributed Systems</text>
+  <line x1="290" y1="56" x2="290" y2="70" class="conn"/>
+
+  <!-- Layer 2: AI Application Layer -->
+  <rect x="90" y="70" width="400" height="44" fill="rgba(80,70,229,0.1)" stroke="#5046e5" stroke-width="1.5" rx="8"/>
+  <text x="290" y="89" class="lbl" text-anchor="middle">AI APPLICATION LAYER</text>
+  <text x="290" y="105" class="sub" text-anchor="middle">RAG · Agents · LLM APIs · Tool Calling</text>
+
+  <!-- Fork lines -->
+  <line x1="290" y1="114" x2="290" y2="126" class="conn"/>
+  <line x1="150" y1="126" x2="430" y2="126" class="conn"/>
+  <line x1="150" y1="126" x2="150" y2="134" class="conn"/>
+  <line x1="290" y1="126" x2="290" y2="134" class="conn"/>
+  <line x1="430" y1="126" x2="430" y2="134" class="conn"/>
+
+  <!-- Layer 3 boxes: RAG, Agents, AI APIs -->
+  <rect x="60"  y="134" width="180" height="48" fill="rgba(80,70,229,0.07)" stroke="#5046e5" stroke-width="1" rx="6"/>
+  <text x="150" y="155" class="lbl" text-anchor="middle">RAG</text>
+  <text x="150" y="170" class="sub" text-anchor="middle">Retrieval · Embeddings</text>
+
+  <rect x="200" y="134" width="180" height="48" fill="rgba(80,70,229,0.07)" stroke="#5046e5" stroke-width="1" rx="6"/>
+  <text x="290" y="155" class="lbl" text-anchor="middle">Agents</text>
+  <text x="290" y="170" class="sub" text-anchor="middle">Tools · ReAct · Memory</text>
+
+  <rect x="340" y="134" width="180" height="48" fill="rgba(80,70,229,0.07)" stroke="#5046e5" stroke-width="1" rx="6"/>
+  <text x="430" y="155" class="lbl" text-anchor="middle">AI APIs</text>
+  <text x="430" y="170" class="sub" text-anchor="middle">LLM · MCP · Streaming</text>
+
+  <!-- Merge lines -->
+  <line x1="150" y1="182" x2="150" y2="194" class="conn"/>
+  <line x1="290" y1="182" x2="290" y2="194" class="conn"/>
+  <line x1="430" y1="182" x2="430" y2="194" class="conn"/>
+  <line x1="150" y1="194" x2="430" y2="194" class="conn"/>
+  <line x1="290" y1="194" x2="290" y2="206" class="conn"/>
+
+  <!-- Layer 4: AI Platform Layer -->
+  <rect x="90" y="206" width="400" height="36" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1.5" rx="8"/>
+  <text x="290" y="221" class="lbl" text-anchor="middle">AI PLATFORM LAYER</text>
+  <text x="290" y="234" class="sub" text-anchor="middle">Models · Vector DB · MCP · Evaluation · Observability</text>
+  <line x1="290" y1="242" x2="290" y2="254" class="conn"/>
+
+  <!-- Layer 5: Production -->
+  <rect x="90" y="254" width="400" height="20" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="4"/>
+  <text x="290" y="268" class="sub" text-anchor="middle">Security · Cost · Scale · Observability · Governance · Reliability</text>
+</svg>

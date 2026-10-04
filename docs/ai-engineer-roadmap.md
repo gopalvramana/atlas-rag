@@ -1,73 +1,98 @@
-# AI Engineer / AI Architect Roadmap
+# AI Engineer & AI Architect Roadmap
 
-This roadmap is calibrated for a **Java/Spring/cloud architect transitioning into AI engineering**.
-The goal is not to become an ML researcher. The goal is to be able to say:
+> **Engineering Career Guide** · Phase 0 + 9 Sprints · Spring AI · PGVector · LLM APIs · Java / Spring Boot
 
-> "I'm a Java/Spring/cloud architect who has built a production-oriented RAG and agent platform,
-> and I understand the architecture, retrieval, agent orchestration, evaluation, observability,
-> security, scalability and enterprise integration aspects of GenAI systems."
+A practical, implementation-first roadmap for backend engineers building production AI systems — RAG pipelines, agentic workflows, evaluation frameworks, and enterprise AI architecture.
 
 ---
 
-## Your Existing Foundation
+## Context: What We're Building Toward
 
-You already have the left side of this picture. We are adding the right side.
+Strong backend engineers don't need to become ML researchers to work in AI. The goal is to add the AI application layer on top of existing systems expertise.
 
-```
-          YOUR EXISTING STRENGTH
-                   │
-  Java / Spring / Cloud / Distributed Systems
-                   │
-                   ▼
-          AI APPLICATION LAYER
-                   │
-      ┌────────────┼────────────┐
-      ▼            ▼            ▼
-    RAG          Agents       AI APIs
-      │            │            │
- Retrieval     Tool Calling  LLM Integration
-      │            │            │
-      └────────────┼────────────┘
-                   ▼
-          AI PLATFORM LAYER
-                   │
-   Models / Vector DB / MCP / Evaluation
-                   │
-                   ▼
-        PRODUCTION AI ARCHITECTURE
-                   │
-   Security / Cost / Scale / Observability
-   Governance / Reliability / Multi-tenancy
-```
+![Architecture Overview](diagrams/architecture-overview.svg)
 
 ---
 
-## The Roadmap
+## Overview: The 9-Sprint Roadmap
 
-| Phase | Sprint | Focus | Priority |
-|---|---|---|---|
-| Foundation | 1 | Embeddings + Vector DB | High |
-| Foundation | 2 | Knowledge Ingestion | Critical |
-| RAG | 3 | Hybrid Retrieval | Critical |
-| RAG | 4 | RAG Question Answering | Critical |
-| Agents | 5 | Agentic AI + Tools | Critical |
-| Agents | 6 | Advanced AI Applications | High |
-| Production AI | 7 | Evaluation + Observability | Critical |
-| Production AI | 8 | MCP + AI Integration | High |
-| Architecture | 9 | Enterprise Production AI Architecture | Critical |
-| Parallel track | — | Python AI Literacy | High |
+| Sprint | Focus | Phase | Priority |
+|:------:|-------|-------|:--------:|
+| 0 | LLM Fundamentals | PRE-REQUISITE | **Critical** |
+| 1 | Embeddings + Vector DB | FOUNDATION | High |
+| 2 | Knowledge Ingestion | FOUNDATION | **Critical** |
+| 3 | Hybrid Retrieval | RAG | **Critical** |
+| 4 | RAG Question Answering | RAG | **Critical** |
+| 5 | Agentic AI + Tools | AGENTS | **Critical** |
+| 6 | Advanced AI Applications | AGENTS | High |
+| 7 | Evaluation + Observability | PRODUCTION | **Critical** |
+| 8 | MCP Integration | PRODUCTION | High |
+| 9 | Enterprise Production AI Architecture | ARCHITECTURE | **Critical** |
 
 ---
 
-## Sprint 1 — Embedding Foundation
+## Sprint by Sprint
 
-**Goal:** Understand the fundamental mechanics of semantic retrieval.
+---
 
-```
-Text → Embedding Model → Vector (1536 dims) → PGVector → Similarity Search
-```
+### 00 · PRE-REQUISITE · LLM Fundamentals
 
-### Learn deeply
+> Build enough understanding of modern LLMs to make architecture and model-selection decisions — without requiring ML-research depth.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**LEARN DEEPLY**
+
+- Tokens and tokenization
+- Context windows and their limits
+- Transformer architecture — conceptual understanding
+- Attention — conceptual understanding
+- Pre-training vs instruction tuning
+- RLHF / preference optimisation — high level
+- Temperature and top-p sampling
+- Generative models vs embedding models
+- Reasoning models and tool-use capable models
+- Small vs large models — when to use each
+- Proprietary vs open-source models
+- Model latency / cost / capability trade-offs
+- Model selection criteria
+
+</td>
+<td width="50%" valign="top">
+
+**ARCHITECT-LEVEL QUESTIONS**
+
+- What actually happens when an LLM receives a prompt?
+- Why does tokenization matter for cost and context?
+- What determines context-window limits?
+- What is the difference between an embedding model and a generative model?
+- When would you choose a smaller model over a larger one?
+- How do latency, quality and token cost influence model selection?
+- How would you choose between GPT, Claude, Gemini or an open-source model?
+- What are the trade-offs between hosted APIs and self-hosted models?
+
+> **Scope boundary:** You do not need deep neural-network mathematics, model training, fine-tuning, or ML research depth. The goal is architectural understanding, not academic depth.
+
+</td>
+</tr>
+</table>
+
+![LLM Fundamentals](diagrams/llm-fundamentals.svg)
+
+---
+
+### 01 · FOUNDATION · Embedding Foundation
+
+> Understand the fundamental mechanics of semantic retrieval — text to vector to similarity search.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**LEARN DEEPLY**
+
 - What embeddings are and why they exist
 - Embedding models and dimensions
 - Semantic similarity vs keyword matching
@@ -76,7 +101,11 @@ Text → Embedding Model → Vector (1536 dims) → PGVector → Similarity Sear
 - Top-K retrieval
 - Vector storage trade-offs
 
-### Interview questions you must answer
+</td>
+<td width="50%" valign="top">
+
+**INTERVIEW QUESTIONS**
+
 - Why embeddings instead of keyword search?
 - Why a vector database?
 - Why cosine similarity?
@@ -84,253 +113,294 @@ Text → Embedding Model → Vector (1536 dims) → PGVector → Similarity Sear
 - What happens if you change the embedding model?
 - HNSW vs brute-force nearest-neighbour search?
 
-**Architecture depth: Medium** — don't over-invest in Maven structure here.
+</td>
+</tr>
+</table>
+
+![Embedding Foundation](diagrams/embedding-foundation.svg)
 
 ---
 
-## Sprint 2 — Knowledge Ingestion
+### 02 · FOUNDATION · Knowledge Ingestion
 
-**Goal:** Build the pipeline that creates the knowledge base.
+> Build the pipeline that converts raw documentation into a searchable vector knowledge base.
 
-```
-Source → Fetcher → Parser → Chunker → Embedding → Vector Store
-```
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Learn deeply
+**LEARN DEEPLY**
+
 - Chunking strategy and why it matters
-- Tokenization and token-based chunking
-- Chunk overlap and its effect on retrieval
+- Token-based chunking and overlap
 - Metadata — what to store and why
 - Duplicate detection and idempotency
 - Re-ingestion handling
 - Batch embeddings vs individual calls
-- API rate limits and failure/retry
 - Ingestion scalability
 
-### Principal-level questions
+</td>
+<td width="50%" valign="top">
+
+**PRINCIPAL-LEVEL QUESTIONS**
+
 - Why 512 tokens? Why 64 overlap?
 - What happens if the document changes?
 - How do you avoid embedding the same document twice?
 - How would you ingest 10 million documents?
 - How would you make ingestion asynchronous?
+- Batch vs individual API calls?
 
-**This is much more important than explaining why you created four Maven modules.**
+</td>
+</tr>
+</table>
+
+![Ingestion Pipeline](diagrams/ingestion-pipeline.svg)
 
 ---
 
-## Sprint 3 — Hybrid Retrieval
+### 03 · RAG · Hybrid Retrieval
 
-**Goal:** Build a retrieval engine that finds the most relevant results — not just similar ones.
+> Build a retrieval engine that finds the most relevant results — not just the most similar ones.
 
-```
-         Query
-           │
-  ┌────────┴────────┐
-  ▼                 ▼
-Vector Search      BM25
-  │                 │
-  └────────┬────────┘
-           ▼
-          RRF
-           ▼
-         Top-K
-```
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Learn deeply
-- Semantic search vs lexical (BM25) search
+**LEARN DEEPLY**
+
+- Semantic vs lexical (BM25) search
 - Why vector search alone is not enough
 - Reciprocal Rank Fusion — how and why
 - Metadata filtering
 - Reranking (cross-encoder vs bi-encoder)
 - Recall vs precision trade-offs
-- Retrieval latency
+- Retrieval latency optimisation
 
-### Key architect question
-> "Why isn't vector search alone enough?"
+</td>
+<td width="50%" valign="top">
+
+**KEY ARCHITECT QUESTION**
+
+> *"Why isn't vector search alone enough?"*
 
 This is one of the most important AI Architect questions. Know it cold.
 
+- What is BM25 and when does it beat semantic search?
+- How does RRF merge two ranked lists?
+- What is a cross-encoder reranker?
+- How do you evaluate retrieval quality?
+
+</td>
+</tr>
+</table>
+
+![Hybrid Retrieval](diagrams/hybrid-retrieval.svg)
+
 ---
 
-## Sprint 4 — RAG Question Answering
+### 04 · RAG · RAG Question Answering
 
-**Goal:** Turn retrieval into an AI application that generates grounded answers.
+> Turn retrieval into an AI application that generates grounded, cited answers.
 
-```
-Question → Query Understanding → Hybrid Retrieval → Context
-    → Prompt → LLM → Answer + Citations
-```
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Learn deeply
+**LEARN DEEPLY**
+
 - Prompt construction — system vs user prompt
 - Context selection and ordering
 - Context window management
 - Hallucination — causes and prevention
 - Citations and grounding
-- Model selection (Claude / GPT / Bedrock)
-- Temperature and output control
-- Structured output
-- Streaming responses
+- Model selection and temperature
+- Structured output and streaming
 
-### Architect questions
+</td>
+<td width="50%" valign="top">
+
+**ARCHITECT QUESTIONS**
+
 - How do you prevent hallucination?
 - How much context should you send to the LLM?
 - What happens when retrieval returns poor results?
 - How do you choose between Claude, GPT, or Bedrock?
 - How do you control token cost?
 
-**Your Java + enterprise architecture background becomes a real advantage here.**
+Your Java + enterprise architecture background becomes a real advantage here.
+
+</td>
+</tr>
+</table>
+
+![Query Pipeline](diagrams/query-pipeline.svg)
 
 ---
 
-## Sprint 5 — Agentic AI
+### 05 · AGENTS · Agentic AI
 
-**Goal:** Transform Atlas from a RAG pipeline into an AI Agent that reasons and uses tools.
+> Transform the RAG pipeline into an AI Agent that reasons about which tools to use before answering.
 
-```
-            User
-              │
-            Agent
-              │
-    ┌─────────┼─────────┐
-    ▼         ▼         ▼
-searchDocs  compile   GitHub
-    │         │         │
-    └─────────┼─────────┘
-              ▼
-           Agent
-              │
-          Response
-```
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Learn deeply
+**LEARN DEEPLY**
+
 - Agent vs deterministic workflow — when to use each
 - Tool calling / function calling
 - ReAct pattern (Reason + Act)
 - Planning and tool selection
 - Multi-step execution
 - Agent state management
-- Failure handling and retries
-- Tool security and authorization
-- Human-in-the-loop approval
+- Failure handling, retries, tool security
 
-### Architect questions
+</td>
+<td width="50%" valign="top">
+
+**ARCHITECT QUESTIONS**
+
 - When should you use an agent vs a deterministic workflow?
 - Why not just call tools directly without an agent loop?
 - How do you prevent an agent from executing dangerous actions?
 - How do you control runaway agent loops?
 
-**High priority** — current AI Architect roles are explicitly asking for agentic architectures.
+**High priority** — current AI Architect roles explicitly ask for agentic architectures.
+
+</td>
+</tr>
+</table>
+
+![Agent Loop](diagrams/agent-loop.svg)
 
 ---
 
-## Sprint 6 — Advanced AI Application Architecture
+### 06 · AGENTS · Advanced AI Applications
 
-**Goal:** Make Atlas production-quality with memory, streaming, model routing, and caching.
+> Add memory, streaming, model routing, caching, and structured outputs. Introduce the LLM Gateway pattern.
 
-```
-            AI Gateway
-                │
-    ┌───────────┼───────────┐
-    ▼           ▼           ▼
-  Claude       GPT       Bedrock
-    │           │           │
-    └───────────┼───────────┘
-                ▼
-           AI Service
-```
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Learn deeply
+**BUILD**
+
 - Conversation memory strategies
 - Structured outputs and schema validation
-- Streaming responses (SSE / WebFlux)
-- Model routing and fallback models
-- Response caching
-- Token optimisation
+- Streaming responses (SSE)
+- Model routing and fallback
+- Response caching and token optimisation
 - Asynchronous AI workflows
-- Structured tool contracts
+
+</td>
+<td width="50%" valign="top">
+
+**ARCHITECT QUESTIONS**
+
+- How does conversation memory work?
+- What are the types of memory in AI agents?
+- Why use structured outputs?
+- How does streaming improve user experience?
+- How do you route between models dynamically?
+
+</td>
+</tr>
+</table>
+
+**LLM Gateway / Model Platform**
+
+![LLM Gateway](diagrams/llm-gateway.svg)
+
+> **Key concerns:** model routing (cost vs quality vs latency), response caching, guardrails (PII, jailbreak), usage quotas, fallback on provider outage, audit logging, API key management.
 
 ---
 
-## Sprint 7 — Evaluation & Observability
+### 07 · PRODUCTION · Evaluation & Observability
 
-**Goal:** Build the framework to measure whether Atlas is working and improving.
+> Build the framework to measure whether the system is working and improving over time.
 
-```
-User → AI Application → LLM / Retrieval / Tools
-                              │
-                       Observability
-                              │
-               ┌──────────────┼──────────────┐
-               ▼              ▼              ▼
-           latency          tokens         quality
-           errors           cost           failures
-```
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Learn deeply
+**EVALUATION**
 
-**Evaluation**
 - Retrieval evaluation (precision, recall, MRR)
-- Answer evaluation (relevance, completeness, groundedness)
+- Answer relevance and groundedness
 - Hallucination detection
 - Citation correctness
-- Evaluation datasets
-- Regression testing for AI systems
+- Evaluation datasets and regression testing
 
-**Observability**
+</td>
+<td width="50%" valign="top">
+
+**OBSERVABILITY**
+
 - Latency at each pipeline stage
 - Token usage and cost per request
-- Model call tracing
-- Retrieval traces
+- Model call and retrieval tracing
 - Tool call logging
 - Prompt and version tracking
 
-**This sprint is not optional for an Architect role.**
+</td>
+</tr>
+</table>
+
+> **This sprint is not optional for an Architect role.**
+
+![Evaluation & Observability](diagrams/evaluation-observability.svg)
 
 ---
 
-## Sprint 8 — MCP Integration
+### 08 · PRODUCTION · MCP Integration
 
-**Goal:** Expose Atlas as an MCP Server so AI clients can interact with it as a platform.
+> Expose the system as an MCP Server so AI clients can interact with it as a platform.
 
-```
-Claude / AI Client
-        │
-       MCP
-        │
-        ▼
-   Atlas MCP Server
-        │
-        ▼
-   Atlas Agent
-        │
-   ┌────┼────┐
-   ▼    ▼    ▼
- RAG  Tools  APIs
-```
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### Learn deeply
+**BUILD**
+
 - MCP Client and MCP Server
 - Tools, resources, and prompts in MCP
-- Tool discovery
-- Transport configuration
+- Tool discovery and transport
 - Security in MCP
 - Enterprise integration via MCP
 
-### The key architect question
-> "Why MCP instead of ordinary REST APIs?"
+</td>
+<td width="50%" valign="top">
+
+**KEY ARCHITECT QUESTION**
+
+> *"Why MCP instead of ordinary REST APIs?"*
 
 Know this answer at architectural depth, not just implementation.
 
+- How do AI applications discover tools?
+- When should MCP replace a traditional API?
+
+</td>
+</tr>
+</table>
+
+![MCP Integration](diagrams/mcp-integration.svg)
+
 ---
 
-## Sprint 9 — Enterprise Production AI Architecture
+### 09 · ARCHITECTURE · Enterprise Production AI Architecture
 
-**Goal:** Answer "How would I run Atlas inside a Fortune 500 enterprise?"
+> This sprint turns "I built a RAG application" into "I can architect an enterprise AI platform." It answers: *how would you run this inside a large organisation?*
 
-This sprint turns "I built a RAG application" into "I can architect an enterprise AI platform."
+![Enterprise Architecture](diagrams/enterprise-architecture.svg)
 
-### 1. Security
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**1 · Security**
+
 - Authentication and authorisation for AI APIs
 - Tenant isolation in multi-tenant AI systems
 - PII detection and redaction
@@ -338,87 +408,194 @@ This sprint turns "I built a RAG application" into "I can architect an enterpris
 - Prompt injection and jailbreak defences
 - Tool authorisation and secrets management
 
-### 2. Scalability
-- Ingestion at scale (millions of documents)
-- Vector DB scaling strategies
-- Async ingestion pipelines and queues
-- Embedding cache
-- Horizontal scaling of AI services
+**3 · Reliability**
 
-### 3. Reliability
 - LLM provider timeouts and outages
 - Retry with exponential backoff
 - Fallback models
 - Circuit breaker pattern for LLM calls
 - Degraded mode (retrieval-only fallback)
 
-### 4. Cost Management
-- Token economics — prompt + completion costs
+**5 · Enterprise Architecture**
+
+- API Gateway → AI Gateway → Model Layer
+- RAG service / Agent service / Tool service
+- Vector DB and enterprise data integration
+- Event-driven ingestion pipelines
+- Observability platform
+
+</td>
+<td width="50%" valign="top">
+
+**2 · Scalability**
+
+- Ingestion at scale — millions of documents
+- Vector DB scaling strategies
+- Async ingestion pipelines and queues
+- Embedding cache
+- Horizontal scaling of AI services
+
+**4 · Cost Management**
+
+- Token economics — prompt vs completion cost
 - Embedding cost at scale
-- Model routing (cheap model for simple queries, expensive for complex)
+- Model routing by query complexity
 - Response caching
 - Context reduction strategies
-- Batch processing for async workloads
 
-### 5. Enterprise Architecture
-```
-API Gateway → AI Gateway → Model Abstraction Layer
-                                │
-              ┌─────────────────┼─────────────────┐
-              ▼                 ▼                 ▼
-         RAG Service       Agent Service     Tool Service
-              │                 │                 │
-              └─────────────────┼─────────────────┘
-                                ▼
-              Vector DB / Enterprise Data / Event Bus
-                                │
-                          Observability
-```
+**6 · Governance**
 
-### 6. Governance
 - Model approval and change management
 - Prompt versioning and rollback
 - Audit logging for AI decisions
 - Data lineage for RAG sources
 - Evaluation gates before promotion
-- Responsible AI policies
+
+</td>
+</tr>
+</table>
 
 ---
 
-## Parallel Track — Python AI Literacy
+## Interview Preparation: Questions by Domain
 
-Run this alongside the sprints. You need **enough Python to work in AI teams**, not ML research depth.
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### You need
+**LLM FUNDAMENTALS**
+
+- What happens when an LLM receives a prompt?
+- Why does tokenization matter for cost?
+- What limits context windows?
+- Embedding model vs generative model?
+- When would you choose a smaller model?
+- How do temperature and top-p affect output?
+- How do you select between GPT, Claude, Gemini?
+- Hosted API vs self-hosted model trade-offs?
+
+</td>
+<td width="50%" valign="top">
+
+**INGESTION**
+
+- Why do we need chunking?
+- How do you choose chunk size?
+- Why token-based vs character-based?
+- How do you handle re-ingestion?
+- How do you scale to 10M documents?
+- Batch vs individual embedding calls?
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**EMBEDDINGS**
+
+- What is an embedding?
+- What determines dimensions?
+- What happens if you change models?
+- Why can't you mix incompatible vectors?
+- Cost and latency considerations?
+
+</td>
+<td width="50%" valign="top">
+
+**VECTOR RETRIEVAL**
+
+- Why vector search over keyword search?
+- Cosine vs Euclidean vs Inner Product?
+- What does the similarity score mean?
+- Why HNSW?
+- Approximate vs exact search trade-off?
+- How do you choose Top-K?
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**RAG**
+
+- Why hybrid retrieval?
+- BM25 vs semantic — when does each win?
+- How does RRF work?
+- How do you evaluate retrieval quality?
+- How do you prevent hallucination?
+- Context window management?
+
+</td>
+<td width="50%" valign="top">
+
+**AGENTIC AI**
+
+- RAG vs Agent — when do you use each?
+- What is Tool Calling?
+- What is the ReAct pattern?
+- How does an agent decide which tool to use?
+- How do you handle tool failures?
+- How do you prevent dangerous actions?
+
+</td>
+</tr>
+<tr>
+<td colspan="2" valign="top">
+
+**PRODUCTION ARCHITECTURE**
+
+- How do you reduce latency in a RAG system?
+- How do you manage token cost at scale?
+- What happens when your LLM provider goes down?
+- How do you detect and handle RAG quality degradation?
+- How do you secure an AI API?
+- How do you govern prompt changes?
+
+</td>
+</tr>
+</table>
+
+---
+
+## Parallel Track: Python AI Literacy
+
+Run this alongside the sprints. The goal is enough Python to work effectively in AI teams — not ML research depth.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**YOU NEED**
+
 - Read and write basic Python
-- FastAPI for building AI microservices
+- FastAPI for AI microservices
 - Call LLM APIs (OpenAI, Anthropic SDK)
 - Manipulate JSON responses
 - Understand LangChain / LangGraph examples
 - Work with Jupyter notebooks
 - Understand basic ML terminology
 
-### You do not need
+</td>
+<td width="50%" valign="top">
+
+**YOU DON'T NEED**
+
 - Advanced NumPy / Pandas
 - PyTorch or TensorFlow internals
 - Model training or fine-tuning
 - Deep learning mathematics
 - ML research papers
 
-Unless you later decide to target ML Engineer or Applied Scientist roles.
+*Unless you later decide to target ML Engineer or Applied Scientist roles.*
+
+</td>
+</tr>
+</table>
 
 ---
 
 ## The Positioning Statement
 
-After completing this roadmap, you should be able to say:
+> *"I'm a Java/Spring/cloud architect who has designed and built a production-oriented RAG and agent platform end-to-end. I understand embedding pipelines, hybrid retrieval, agent orchestration, prompt engineering, evaluation, observability, security, and enterprise integration for GenAI systems — and I can bridge the AI application layer with the enterprise infrastructure and backend systems that organisations already run."*
 
-> "I'm a Java/Spring/cloud architect who has designed and built a production-oriented RAG and
-> agent platform end-to-end. I understand embedding pipelines, hybrid retrieval, agent
-> orchestration, prompt engineering, evaluation, observability, security, and enterprise
-> integration for GenAI systems — and I can bridge the AI application layer with the
-> enterprise infrastructure and Java backend systems that organisations already run."
-
-That is a credible, differentiated position in the current market. It does not require
-competing with ML researchers. It requires combining what you already know with what
-Atlas teaches you.
+That is a credible, differentiated position in the current market. It does not require competing with ML researchers. It requires combining existing expertise with what this roadmap teaches.

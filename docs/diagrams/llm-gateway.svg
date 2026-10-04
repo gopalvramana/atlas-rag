@@ -1,0 +1,61 @@
+<svg viewBox="0 0 680 230" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: 600 13px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .lbl   { font: 600 12px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .sub   { font: 400 9.5px 'SF Mono','Cascadia Code','Consolas',monospace; fill:#656d76; }
+    .conn  { stroke:#5046e5; stroke-width:1.5; fill:none; }
+  </style>
+  <rect width="680" height="230" fill="#ffffff" rx="10"/>
+  <text x="24" y="22" class="title">LLM Gateway / Model Platform</text>
+  <text x="24" y="37" style="font:400 10px -apple-system,'Segoe UI',sans-serif;fill:#656d76;">unified gateway with routing, caching, guardrails</text>
+
+  <!-- App boxes -->
+  <rect x="30"  y="52" width="110" height="32" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="6"/>
+  <text x="85"  y="72" class="lbl" text-anchor="middle">App A</text>
+  <rect x="155" y="52" width="110" height="32" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="6"/>
+  <text x="210" y="72" class="lbl" text-anchor="middle">App B</text>
+  <rect x="280" y="52" width="110" height="32" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="6"/>
+  <text x="335" y="72" class="lbl" text-anchor="middle">App C</text>
+
+  <!-- Arrows down to gateway -->
+  <line x1="85"  y1="84" x2="85"  y2="110" class="conn"/>
+  <line x1="210" y1="84" x2="210" y2="110" class="conn"/>
+  <line x1="335" y1="84" x2="335" y2="110" class="conn"/>
+  <line x1="85"  y1="110" x2="335" y2="110" class="conn"/>
+  <line x1="210" y1="110" x2="210" y2="118" class="conn"/>
+
+  <!-- Gateway -->
+  <rect x="30" y="118" width="390" height="40" fill="rgba(80,70,229,0.12)" stroke="#5046e5" stroke-width="2" rx="8"/>
+  <text x="225" y="143" class="lbl" text-anchor="middle" style="font-size:13px;">AI Gateway / Model Platform</text>
+
+  <!-- Side chips -->
+  <rect x="440" y="120" width="90" height="26" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="5"/>
+  <text x="485" y="137" class="sub" text-anchor="middle" style="fill:#1a1a2e;font-size:10px;">Guardrails</text>
+  <rect x="545" y="120" width="80" height="26" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="5"/>
+  <text x="585" y="137" class="sub" text-anchor="middle" style="fill:#1a1a2e;font-size:10px;">Cache</text>
+  <rect x="440" y="154" width="90" height="26" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="5"/>
+  <text x="485" y="171" class="sub" text-anchor="middle" style="fill:#1a1a2e;font-size:10px;">Audit Log</text>
+  <rect x="545" y="154" width="80" height="26" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1" rx="5"/>
+  <text x="585" y="171" class="sub" text-anchor="middle" style="fill:#1a1a2e;font-size:10px;">Eval</text>
+
+  <!-- Arrow to router -->
+  <line x1="210" y1="158" x2="210" y2="172" class="conn"/>
+
+  <!-- Model Router -->
+  <rect x="110" y="172" width="200" height="30" fill="rgba(0,0,0,0.03)" stroke="#d0d7de" stroke-width="1.5" rx="6"/>
+  <text x="210" y="191" class="lbl" text-anchor="middle">Model Router</text>
+
+  <!-- Fork to models -->
+  <line x1="210" y1="202" x2="210" y2="212" class="conn"/>
+  <line x1="80"  y1="212" x2="340" y2="212" class="conn"/>
+  <line x1="80"  y1="212" x2="80"  y2="218" class="conn"/>
+  <line x1="210" y1="212" x2="210" y2="218" class="conn"/>
+  <line x1="340" y1="212" x2="340" y2="218" class="conn"/>
+
+  <rect x="20"  y="218" width="120" height="10" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1" rx="3"/>
+  <text x="80"  y="226" class="sub" text-anchor="middle" style="font-size:9px;">GPT / Azure OpenAI</text>
+  <rect x="150" y="218" width="120" height="10" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1" rx="3"/>
+  <text x="210" y="226" class="sub" text-anchor="middle" style="font-size:9px;">Claude / Bedrock</text>
+  <rect x="280" y="218" width="120" height="10" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1" rx="3"/>
+  <text x="340" y="226" class="sub" text-anchor="middle" style="font-size:9px;">Gemini / Vertex AI</text>
+</svg>

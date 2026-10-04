@@ -1,0 +1,52 @@
+<svg viewBox="0 0 580 260" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: 600 13px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .lbl   { font: 600 12px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .sub   { font: 400 9.5px 'SF Mono','Cascadia Code','Consolas',monospace; fill:#656d76; }
+    .conn  { stroke:#5046e5; stroke-width:1.5; fill:none; }
+  </style>
+  <rect width="580" height="260" fill="#ffffff" rx="10"/>
+  <text x="24" y="22" class="title">Agentic AI — ReAct Loop</text>
+  <text x="24" y="37" style="font:400 10px -apple-system,'Segoe UI',sans-serif;fill:#656d76;">User → Agent → Tools → Agent → Response</text>
+
+  <!-- User Query -->
+  <rect x="190" y="48" width="200" height="36" fill="rgba(80,70,229,0.12)" stroke="#5046e5" stroke-width="1.5" rx="20"/>
+  <text x="290" y="71" class="lbl" text-anchor="middle">User Query</text>
+  <line x1="290" y1="84" x2="290" y2="98" class="conn"/>
+
+  <!-- Agent -->
+  <rect x="165" y="98" width="250" height="44" fill="rgba(80,70,229,0.1)" stroke="#5046e5" stroke-width="1.5" rx="8"/>
+  <text x="290" y="117" class="lbl" text-anchor="middle">Agent</text>
+  <text x="290" y="132" class="sub" text-anchor="middle">Reason → Plan → Select tool</text>
+
+  <!-- Fork to tools -->
+  <line x1="290" y1="142" x2="290" y2="158" class="conn"/>
+  <line x1="130" y1="158" x2="450" y2="158" class="conn"/>
+  <line x1="130" y1="158" x2="130" y2="166" class="conn"/>
+  <line x1="290" y1="158" x2="290" y2="166" class="conn"/>
+  <line x1="450" y1="158" x2="450" y2="166" class="conn"/>
+
+  <!-- Tools -->
+  <rect x="50"  y="166" width="160" height="44" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1" rx="6"/>
+  <text x="130" y="186" class="lbl" text-anchor="middle">searchDocs</text>
+  <text x="130" y="201" class="sub" text-anchor="middle">RAG pipeline</text>
+
+  <rect x="210" y="166" width="160" height="44" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1" rx="6"/>
+  <text x="290" y="186" class="lbl" text-anchor="middle">compileJava</text>
+  <text x="290" y="201" class="sub" text-anchor="middle">Maven build</text>
+
+  <rect x="370" y="166" width="160" height="44" fill="rgba(63,185,80,0.1)" stroke="#3fb950" stroke-width="1" rx="6"/>
+  <text x="450" y="186" class="lbl" text-anchor="middle">searchGitHub</text>
+  <text x="450" y="201" class="sub" text-anchor="middle">GitHub API</text>
+
+  <!-- Merge back to agent -->
+  <line x1="130" y1="210" x2="130" y2="222" class="conn"/>
+  <line x1="290" y1="210" x2="290" y2="222" class="conn"/>
+  <line x1="450" y1="210" x2="450" y2="222" class="conn"/>
+  <line x1="130" y1="222" x2="450" y2="222" class="conn"/>
+  <line x1="290" y1="222" x2="290" y2="232" class="conn"/>
+
+  <!-- Response -->
+  <rect x="190" y="232" width="200" height="20" fill="rgba(63,185,80,0.12)" stroke="#3fb950" stroke-width="1.5" rx="10"/>
+  <text x="290" y="246" class="lbl" text-anchor="middle" style="font-size:11px;">Grounded Response</text>
+</svg>
