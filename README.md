@@ -1,4 +1,4 @@
-# Atlas RAG — Spring AI Learning Vehicle
+# Atlas RAG — Spring AI
 
 A Q&A service over Spring AI documentation, rebuilt from scratch as an interview/portfolio
 project — one AI-engineering technique per module, in Java, with the design reasoning
