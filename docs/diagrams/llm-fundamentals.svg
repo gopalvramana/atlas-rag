@@ -1,0 +1,48 @@
+<svg viewBox="0 0 740 160" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .lbl  { font: 600 12px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#1a1a2e; }
+    .sub  { font: 400 9.5px 'SF Mono','Cascadia Code','Consolas',monospace; fill:#656d76; }
+    .tag  { font: 500 9px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#656d76; text-transform:uppercase; letter-spacing:.08em; }
+    .arr  { font: 500 14px -apple-system,'Segoe UI',system-ui,sans-serif; fill:#c05a10; }
+    .conn { stroke:#c05a10; stroke-width:1.5; fill:none; }
+  </style>
+  <rect width="740" height="160" fill="#ffffff" rx="10"/>
+  <text x="24" y="22" class="tag">LLM Fundamentals — Conceptual Flow</text>
+
+  <!-- Row 1: Token flow -->
+  <rect x="24"  y="34" width="130" height="48" fill="rgba(192,90,16,0.08)" stroke="#c05a10" stroke-width="1.5" rx="8"/>
+  <text x="89"  y="55" class="lbl" text-anchor="middle">Prompt</text>
+  <text x="89"  y="70" class="sub" text-anchor="middle">(tokenized input)</text>
+  <text x="168" y="62" class="arr">→</text>
+
+  <rect x="180" y="34" width="140" height="48" fill="rgba(192,90,16,0.08)" stroke="#c05a10" stroke-width="1.5" rx="8"/>
+  <text x="250" y="55" class="lbl" text-anchor="middle">Transformer</text>
+  <text x="250" y="70" class="sub" text-anchor="middle">(attention layers)</text>
+  <text x="334" y="62" class="arr">→</text>
+
+  <rect x="346" y="34" width="150" height="48" fill="rgba(192,90,16,0.08)" stroke="#c05a10" stroke-width="1.5" rx="8"/>
+  <text x="421" y="55" class="lbl" text-anchor="middle">Generation</text>
+  <text x="421" y="70" class="sub" text-anchor="middle">(temperature / top-p)</text>
+  <text x="510" y="62" class="arr">→</text>
+
+  <rect x="522" y="34" width="130" height="48" fill="rgba(192,90,16,0.08)" stroke="#c05a10" stroke-width="1.5" rx="8"/>
+  <text x="587" y="55" class="lbl" text-anchor="middle">Response</text>
+  <text x="587" y="70" class="sub" text-anchor="middle">(tokens → text)</text>
+
+  <!-- Row 2: Model taxonomy -->
+  <rect x="24"  y="102" width="160" height="44" fill="rgba(192,90,16,0.05)" stroke="#c05a10" stroke-width="1" rx="6"/>
+  <text x="104" y="122" class="lbl" text-anchor="middle">Generative</text>
+  <text x="104" y="137" class="sub" text-anchor="middle">GPT · Claude · Gemini</text>
+
+  <rect x="196" y="102" width="160" height="44" fill="rgba(192,90,16,0.05)" stroke="#c05a10" stroke-width="1" rx="6"/>
+  <text x="276" y="122" class="lbl" text-anchor="middle">Embedding</text>
+  <text x="276" y="137" class="sub" text-anchor="middle">text-embedding-3-small</text>
+
+  <rect x="368" y="102" width="160" height="44" fill="rgba(192,90,16,0.05)" stroke="#c05a10" stroke-width="1" rx="6"/>
+  <text x="448" y="122" class="lbl" text-anchor="middle">Reasoning</text>
+  <text x="448" y="137" class="sub" text-anchor="middle">o3 · DeepSeek-R1</text>
+
+  <rect x="540" y="102" width="162" height="44" fill="rgba(192,90,16,0.05)" stroke="#c05a10" stroke-width="1" rx="6"/>
+  <text x="621" y="122" class="lbl" text-anchor="middle">Tool-Use Capable</text>
+  <text x="621" y="137" class="sub" text-anchor="middle">function calling</text>
+</svg>
