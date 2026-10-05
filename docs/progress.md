@@ -101,3 +101,35 @@ Query
 | `Reranker` | `atlas-retrieval` | ⬜ |
 | `ContextSelector` | `atlas-retrieval` | ⬜ |
 | `RetrievedContext` | `atlas-retrieval` | ⬜ |
+
+---
+
+## ⬜ Sprint 4 — RAG Question Answering (not started)
+
+Goal: take `RetrievedContext` from Sprint 3 and produce a grounded, cited LLM response.
+The core challenge is LLM-side context management — assembling a prompt that fits within
+the model's context window while reserving space for output and avoiding duplicate chunks.
+
+```
+RetrievedContext  →  PromptAssembler  →  Token Budget Check  →  ChatModel  →  RagResponse
+```
+
+### Steps
+
+| # | What | Exit condition | Status |
+|---|---|---|:---:|
+| 4.1 | `PromptAssembler` — system prompt + question + chunks + output reserve | Token breakdown logged; correct chunks selected within budget | ⬜ |
+| 4.2 | Context overflow handling — trim / reject | Overflow triggers trim; no chunks → structured "cannot answer" | ⬜ |
+| 4.3 | `RagService` — orchestrates retrieval → prompt → LLM → response | End-to-end call returns answer + citations | ⬜ |
+| 4.4 | Spring AI `ChatModel` integration | Real LLM call succeeds; token usage logged | ⬜ |
+| 4.5 | Grounding + hallucination control | System prompt enforces context-only answers; verified on 3 out-of-scope questions | ⬜ |
+| 4.6 | `POST /api/v1/ask` endpoint | Returns `{ answer, citations, tokenUsage }` for 10 test questions | ⬜ |
+
+### Classes to build
+
+| Class | Module | Done |
+|---|---|:---:|
+| `PromptAssembler` | `atlas-agent` | ⬜ |
+| `RagService` | `atlas-agent` | ⬜ |
+| `RagResponse` | `atlas-agent` | ⬜ |
+| `AskController` | `atlas-api` | ⬜ |
