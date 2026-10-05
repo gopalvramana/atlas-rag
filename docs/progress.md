@@ -39,14 +39,30 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
   - Top-K with optional version filter
   - End-to-end search verified (score ~0.71 for test query)
 
-## ⬜ Next — Sprint 2: Hybrid Retrieval
+## ⬜ Next — Sprint 3: Hybrid Retrieval
 
-Goal: add BM25 full-text search and fuse with vector results via Reciprocal Rank Fusion (RRF).
+Goal: build the complete retrieval pipeline from query to final context block ready for the LLM.
+
+```
+Query
+  ↓
+Semantic Search (vector)   +   BM25 Search (full-text)
+  ↓                                   ↓
+         Merge — RRF
+              ↓
+           Rerank
+              ↓
+   Context Selection + Token-Aware Trimming
+              ↓
+     Final Context (ready for Sprint 4 RAG QA)
+```
 
 Steps:
-1. Add `tsvector` column to `chunks` table (Flyway V2 migration)
-2. Populate `tsvector` on insert (trigger or application-side)
-3. Build `BM25SearchService` using PostgreSQL `ts_rank` / `to_tsquery`
-4. Build `HybridSearchService` fusing vector + BM25 results with RRF
-5. Compare: vector-only vs BM25-only vs hybrid for 5 test queries
-6. Wire into `atlas-api`
+1. Flyway V2 migration — add `tsvector` column to `chunks`
+2. `BM25SearchService` — PostgreSQL full-text search (`ts_rank` / `to_tsquery`)
+3. `HybridSearchService` — fuse vector + BM25 via RRF
+4. `Reranker` — score-based reranking of fused results
+5. `ContextSelector` — token-aware trimming to fit LLM context window
+6. End-to-end comparison: vector-only vs BM25-only vs hybrid for 5 test queries
+
+Sprint 2 (Knowledge Ingestion) maps to the ingestion pipeline already built in Step 3 above.
