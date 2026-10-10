@@ -13,19 +13,7 @@ refines the result through reranking and token-aware context selection.
 object — a ranked, deduplicated, token-budget-respecting list of chunks ready for Sprint 4
 (RAG Question Answering).
 
-```
-Query
-  ├── Semantic Search (vector / cosine similarity)
-  └── BM25 Search    (full-text / PostgreSQL tsvector)
-              ↓
-         Merge via RRF
-              ↓
-           Rerank
-              ↓
-  Context Selection + Token-Aware Trimming
-              ↓
-     RetrievedContext  →  Sprint 4
-```
+![Sprint 3 — Hybrid Retrieval Pipeline](../diagrams/sprint-03-pipeline.svg)
 
 ---
 
