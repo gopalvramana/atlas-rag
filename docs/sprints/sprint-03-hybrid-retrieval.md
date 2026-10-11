@@ -105,6 +105,30 @@ This comparison is an interview question in itself.
 
 ---
 
+## LLM Fundamentals — Integrated into This Sprint
+
+**Embedding model behavior affects retrieval quality**
+- *What:* The embedding model defines the vector space. A model trained on general text may not represent Spring AI-specific identifiers (`ChatClient`, `VectorStore`) well. Poor domain fit → vectors for similar concepts land far apart → retrieval misses relevant chunks.
+- *Why it matters here:* This is why hybrid retrieval exists. BM25 compensates for embedding model domain gaps on exact identifiers. If retrieval quality is poor despite good chunking, the embedding model is the first thing to investigate.
+- *Interview:* "Your vector search returns poor results for API-specific queries. What would you investigate first?"
+
+**Semantic similarity vs lexical matching — when each wins**
+- *What:* Vector search excels at conceptual queries ("how does Spring AI handle context?"). BM25 excels at exact-match queries ("ChatClient.builder() method"). Neither dominates across all query types.
+- *Why it matters here:* This is the architectural justification for every line of code in this sprint. If you cannot articulate this, you cannot defend the hybrid retrieval design.
+- *Interview:* "Why isn't vector search alone enough? Give a concrete example where BM25 beats vector search."
+
+**Retrieval quality depends on more than the embedding model**
+- *What:* Chunk size, overlap, Top-K value, reranking, and metadata filtering all affect what the LLM receives. A better embedding model cannot compensate for chunks that are too large, a Top-K that is too low, or missing a reranking step.
+- *Why it matters here:* When retrieval quality is poor, you need to know which variable to tune. This sprint introduces all the major retrieval levers in one place.
+- *Interview:* "How would you systematically improve retrieval quality? What are all the variables you can tune?"
+
+**Precision, recall, and ranking trade-offs**
+- *What:* Recall = fraction of relevant chunks retrieved. Precision = fraction of retrieved chunks that are relevant. High Top-K improves recall but degrades precision (more noise for the LLM). Reranking improves precision without sacrificing recall. RRF improves both by combining two recall sources.
+- *Why it matters here:* These are the metrics used in Step 3.6 to compare vector-only vs BM25-only vs hybrid results.
+- *Interview:* "How do you measure retrieval quality? What is the trade-off between Top-K and precision?"
+
+---
+
 ## Concepts Learned
 
 - Why vector search alone is not enough (the most important retrieval question)

@@ -1,6 +1,6 @@
 # AI Engineer & AI Architect Roadmap
 
-> **Engineering Career Guide** · Phase 0 + 9 Sprints · Spring AI · PGVector · LLM APIs · Java / Spring Boot
+> **Engineering Career Guide** · 9 Sprints · Spring AI · PGVector · LLM APIs · Java / Spring Boot
 
 A practical, implementation-first roadmap for backend engineers building production AI systems — RAG pipelines, agentic workflows, evaluation frameworks, and enterprise AI architecture.
 
@@ -18,7 +18,6 @@ Strong backend engineers don't need to become ML researchers to work in AI. The 
 
 | Sprint | Focus | Phase | Priority |
 |:------:|-------|-------|:--------:|
-| 0 | LLM Fundamentals | PRE-REQUISITE | **Critical** |
 | 1 | Embeddings + Vector DB | FOUNDATION | High |
 | 2 | Knowledge Ingestion | FOUNDATION | **Critical** |
 | 3 | Hybrid Retrieval | RAG | **Critical** |
@@ -31,55 +30,63 @@ Strong backend engineers don't need to become ML researchers to work in AI. The 
 
 ---
 
-## Sprint by Sprint
+## How LLM Fundamentals Are Learned
+
+LLM fundamentals are **not a prerequisite sprint**. They are distributed just-in-time across the sprints where they are directly needed. You learn each concept when you hit the engineering problem it explains.
+
+> **Why this approach:** Reading about tokens and transformers in isolation before you have a retrieval pipeline to apply them to is far less effective than encountering a concept exactly when it matters. Each sprint doc has a dedicated "LLM Fundamentals Integrated into This Sprint" section.
+
+### LLM Fundamentals Mapping
+
+| Concept | Sprint | Why it's learned there |
+|---|:---:|---|
+| Tokens and tokenization | 1 | Chunk size is measured in tokens, not characters |
+| Embedding models vs generative models | 1 | Sprint 1 uses `EmbeddingModel`, not `ChatModel` |
+| Embedding dimensions and model selection | 1 | 1536-dim vectors drive schema design |
+| Semantic representation | 1 | Vectors encode meaning — what retrieval is actually measuring |
+| Embedding model changes require full re-embedding | 1 | Operational constraint; affects versioning decisions |
+| Token-based chunk sizing | 2 | jtokkit counts tokens for chunk size enforcement |
+| Token counting, cost, and batching | 2 | Embedding API cost and rate limits are per-token |
+| Context limits of embedding models | 2 | text-embedding-3-small limit = 8,191 tokens |
+| Embedding model behavior during retrieval | 3 | The same model that embedded must embed the query |
+| Semantic vs lexical search trade-offs | 3 | Why BM25 catches what vector search misses |
+| Retrieval quality variables | 3 | RRF and reranking require understanding precision/recall |
+| Context window vs available context | 4 | PromptAssembler must budget for system prompt + question |
+| Input budget vs output token reserve | 4 | Output space must be reserved before chunks fill the window |
+| Prompt structure: system / user / context | 4 | Grounding instructions must go in the system prompt |
+| Temperature and top-p | 4 | RAG requires low temperature (0–0.2) |
+| Why LLMs hallucinate | 4 | Explains the three hallucination failure modes |
+| Transformer/attention conceptual | 4 | Lost-in-the-middle: chunk ordering in context matters |
+| Tool-use capable models | 5 | Agent loop requires a model that supports structured tool calls |
+| How models select tools | 5 | Tool descriptions are the interface — write them precisely |
+| Model-generated request vs execution boundary | 5 | Authorization belongs in the app, not the model |
+| Model capability trade-offs for agents | 5 | Right-size the model to the task complexity |
+| Model routing | 6 | Route to cheapest model that meets quality bar |
+| Small vs large models | 6 | Structured output reliability varies by model size |
+| Hosted vs self-hosted | 6 | Data sovereignty drives model deployment choice |
+| Quality/latency/cost/complexity four-way trade-off | 6 | Principal-level architectural reasoning |
+| Token optimization | 6 | Trimming and caching reduce cost without quality loss |
+| Evaluating non-deterministic models | 7 | Temperature 0 for reproducible evaluation runs |
+| Why model changes affect answers | 7 | Model version bumps require full regression evaluation |
+| Regression evaluation | 7 | Any prompt/model/context change needs a baseline check |
+| Tool discovery via MCP | 8 | MCP publishes tool manifests; models read them at runtime |
+
+### The Learning Cycle
+
+Every concept follows this six-step cycle:
+
+| Step | What you do |
+|:---:|---|
+| **1. Understand** | Read the concept in the sprint doc — what it is and why it matters here |
+| **2. Decide** | Make an architecture or implementation decision that uses the concept |
+| **3. Implement** | Write the code that depends on the decision |
+| **4. Inspect** | Run it, read the output, measure the result |
+| **5. Explain** | Write the answer to the interview question in the sprint doc in your own words |
+| **6. Defend** | Argue for your design choice: why this approach, not an alternative |
 
 ---
 
-### 00 · PRE-REQUISITE · LLM Fundamentals
-
-> Build enough understanding of modern LLMs to make architecture and model-selection decisions — without requiring ML-research depth.
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-**LEARN DEEPLY**
-
-- Tokens and tokenization
-- Context windows and their limits
-- Transformer architecture — conceptual understanding
-- Attention — conceptual understanding
-- Pre-training vs instruction tuning
-- RLHF / preference optimisation — high level
-- Temperature and top-p sampling
-- Generative models vs embedding models
-- Reasoning models and tool-use capable models
-- Small vs large models — when to use each
-- Proprietary vs open-source models
-- Model latency / cost / capability trade-offs
-- Model selection criteria
-
-</td>
-<td width="50%" valign="top">
-
-**ARCHITECT-LEVEL QUESTIONS**
-
-- What actually happens when an LLM receives a prompt?
-- Why does tokenization matter for cost and context?
-- What determines context-window limits?
-- What is the difference between an embedding model and a generative model?
-- When would you choose a smaller model over a larger one?
-- How do latency, quality and token cost influence model selection?
-- How would you choose between GPT, Claude, Gemini or an open-source model?
-- What are the trade-offs between hosted APIs and self-hosted models?
-
-> **Scope boundary:** You do not need deep neural-network mathematics, model training, fine-tuning, or ML research depth. The goal is architectural understanding, not academic depth.
-
-</td>
-</tr>
-</table>
-
-![LLM Fundamentals](diagrams/llm-fundamentals.svg)
+## Sprint by Sprint
 
 ---
 
