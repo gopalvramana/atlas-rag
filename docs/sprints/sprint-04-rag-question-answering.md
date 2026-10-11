@@ -128,6 +128,40 @@ Run 10 questions. For each verify:
 
 ---
 
+## LLM Fundamentals — Integrated into This Sprint
+
+**Context window vs actual available context**
+- *What:* The model's context window (e.g., 128K tokens for Claude, 16K for GPT-3.5) is the hard upper limit. The *available* context for retrieved chunks = window − system prompt − user question − output token reserve. The gap between window size and available context is often 1,000–3,000 tokens.
+- *Why it matters here:* `PromptAssembler` must account for all budget consumers — not just the chunks. Ignoring system prompt tokens causes silent overflow.
+- *Interview:* "What is the difference between the model's context window and the context available for retrieved chunks?"
+
+**Input token budget vs output token reserve**
+- *What:* If you fill the entire context window with input, the model has no room to generate output and will either truncate or return an API error. Output token reserve = the number of tokens you protect for the completion. For RAG answers, 1,000–2,000 tokens is typical.
+- *Why it matters here:* `PromptAssembler` must subtract the output reserve before selecting chunks. This is a hard constraint, not a suggestion.
+- *Interview:* "Why do you need to reserve tokens for output? What happens if you don't?"
+
+**System prompt vs user prompt vs retrieved context**
+- *What:* System prompt = persistent instructions + persona, processed with highest influence, placed first. User prompt = the question. Retrieved context = injected after the question (or in a separate user turn). Placement affects the model's attention weighting — instructions in the system prompt are more reliably followed than identical instructions in the user prompt.
+- *Why it matters here:* The grounding instruction ("answer only from the context below") must be in the system prompt to be reliable. Retrieved chunks follow after the question.
+- *Interview:* "Where do you place retrieved context in the prompt? Why does placement matter?"
+
+**Temperature and top-p**
+- *What:* Temperature (0–1+) scales the probability distribution over next tokens. 0 = always pick the highest-probability token (deterministic). 1 = sample proportionally (creative, variable). Top-p restricts sampling to tokens summing to probability mass p. For RAG, use temperature 0–0.2: factual, grounded, low hallucination risk.
+- *Why it matters here:* `ChatModel` configuration should set low temperature for RAG answers. High temperature increases the chance the model generates plausible-sounding content not in the context.
+- *Interview:* "What temperature would you use for a RAG system and why?"
+
+**Why LLMs produce incorrect or unsupported answers**
+- *What:* Three distinct failure modes: (1) context doesn't contain the answer → model guesses from training data; (2) context contains conflicting information → model picks one arbitrarily; (3) attention dilution in long contexts → model ignores parts of the context ("lost in the middle" problem). The grounding system prompt eliminates (1) with a cooperative model but cannot prevent (2) or (3).
+- *Why it matters here:* Understanding the failure modes determines what the system prompt can and cannot fix, and informs the "cannot answer" fallback design.
+- *Interview:* "You told the model to answer only from context but it still hallucinated. What could cause that?"
+
+**Transformer and attention — conceptual understanding**
+- *What:* The transformer processes the entire input sequence in parallel. Attention allows every token to "look at" every other token. In long inputs, attention is spread across more tokens — relevance signals from the beginning and middle of a long context can be diluted. This is why chunk ordering within the prompt matters.
+- *Why it matters here:* The highest-relevance chunks should be placed first (and last) in the context block — not buried in the middle. This is an implementation decision in `PromptAssembler`.
+- *Interview:* "Why does the order of retrieved chunks in the prompt affect answer quality?"
+
+---
+
 ## Classes to Build
 
 | Class | Module | Responsibility |

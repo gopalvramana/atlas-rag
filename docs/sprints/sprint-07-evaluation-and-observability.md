@@ -70,6 +70,25 @@ quality, citations, and overall agent performance.
 
 ---
 
+## LLM Fundamentals — Integrated into This Sprint
+
+**Evaluating model quality and consistency**
+- *What:* LLMs are non-deterministic at temperature > 0. The same prompt produces different outputs across runs. Evaluation must aggregate metrics across multiple runs, or use temperature 0 for deterministic scoring. A single-run evaluation of a non-deterministic model is not statistically valid.
+- *Why it matters here:* The evaluation runner should use a fixed temperature (0 or a low value) for reproducibility, and distinguish between retrieval failures and model generation failures — the failure modes require different fixes.
+- *Interview:* "How do you design a statistically valid evaluation for a non-deterministic LLM system?"
+
+**Why model changes affect retrieval-grounded answers and tool use**
+- *What:* Changing the model provider, version, or generation parameters changes: how instructions in the system prompt are followed, how the model weighs context vs its pre-training, how reliably it generates structured output, and which tools it selects. An answer that was grounded before may hallucinate after a model change, even with identical retrieval.
+- *Why it matters here:* Model version changes are a first-class change event requiring a full evaluation run. This must be enforced in the evaluation pipeline, not treated as a "minor update."
+- *Interview:* "You upgraded from Claude 3 Sonnet to Claude 3.5 Sonnet. What must you do before releasing to production?"
+
+**Regression evaluation when prompts, models, or context strategies change**
+- *What:* Any change to system prompt wording, context placement, model selection, chunk size, or reranking strategy can degrade quality on previously passing test cases while improving others. Regression evaluation against a fixed dataset of expected outputs is the only way to detect this.
+- *Why it matters here:* The 50-question evaluation dataset exists precisely for this. Sprint 9 will add CI gates that block deployment when evaluation scores drop below threshold.
+- *Interview:* "How do you ensure that a prompt change doesn't degrade RAG quality on existing query types?"
+
+---
+
 ## Interview Readiness
 
 After completing this sprint, you should be able to explain:
