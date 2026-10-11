@@ -9,6 +9,17 @@ applications can interact with it.
 
 ---
 
+## LLM Fundamentals — Integrated into This Sprint
+
+Learn this before writing any code. It explains the model–application boundary that MCP is built on.
+
+**How an LLM-driven application discovers and invokes tools through MCP**
+- *What:* The MCP server publishes a tool manifest — name, description, and input schema for each tool. An LLM client reads the manifest and presents tool descriptions to the model alongside the user message. The model generates a structured tool invocation request (which tool, which arguments). MCP transports the request to the server, executes the tool, and returns the result to the model. The model never calls the tool directly.
+- *Why it matters here:* This is the same model–application boundary as Sprint 5 (tool calling), but now the tools are discovered dynamically via MCP rather than registered statically in the application. Understanding the boundary is what lets you explain why MCP is more than just a protocol wrapper.
+- *Interview:* "How is tool invocation via MCP different from function calling registered statically in the application? What does MCP add?"
+
+---
+
 ## Build Tasks
 
 ### 1. Learn MCP Architecture by Building
@@ -65,15 +76,6 @@ applications can interact with it.
 - Tool Discovery
 - AI-to-AI Integration
 - Spring AI MCP
-
----
-
-## LLM Fundamentals — Integrated into This Sprint
-
-**How an LLM-driven application discovers and invokes tools through MCP**
-- *What:* The MCP server publishes a tool manifest — name, description, and input schema for each tool. An LLM client reads the manifest and presents tool descriptions to the model alongside the user message. The model generates a structured tool invocation request (which tool, which arguments). MCP transports the request to the server, executes the tool, and returns the result to the model. The model never calls the tool directly.
-- *Why it matters here:* This is the same model–application boundary as Sprint 5 (tool calling), but now the tools are discovered dynamically via MCP rather than registered statically in the application. Understanding the boundary is what lets you explain why MCP is more than just a protocol wrapper.
-- *Interview:* "How is tool invocation via MCP different from function calling registered statically in the application? What does MCP add?"
 
 ---
 

@@ -12,6 +12,42 @@ chunks using vector search.
 
 ---
 
+## LLM Fundamentals — Integrated into This Sprint
+
+Learn these before writing any code. Each concept explains a decision you are about to make.
+
+**Tokens and tokenization**
+- *What:* The embedding model splits text into tokens — subword units, not words. `text-embedding-3-small` uses the cl100k_base tokenizer. "ChatClient" is one token; "ChatClientBuilder" may be two.
+- *Why it matters here:* Chunk size (512 tokens) is measured in tokens, not words or characters. Getting this wrong produces chunks that exceed the model's input limit.
+- *Interview:* "What is a token? Why do RAG systems measure chunk size in tokens rather than characters?"
+
+**Embedding models vs generative models**
+- *What:* An embedding model converts text into a fixed-size vector — no text output. A generative model produces text. Atlas uses both: `text-embedding-3-small` for indexing, Claude/GPT for answering.
+- *Why it matters here:* You are configuring Spring AI's `EmbeddingModel` — not `ChatModel`. Confusing the two is the most common setup mistake.
+- *Interview:* "What is the difference between `EmbeddingModel` and `ChatModel` in Spring AI?"
+
+**Embedding dimensions and model selection**
+- *What:* `text-embedding-3-small` outputs 1536-dimensional vectors. Dimensions define the size of the semantic space. More dimensions can capture more nuance but cost more storage and compute.
+- *Why it matters here:* The `chunks` table schema is fixed at `vector(1536)` for this model. If you switch models, the dimension may change and the schema must be updated.
+- *Interview:* "What does 1536 dimensions mean? What happens if you change the embedding model?"
+
+**Semantic representation — why vectors capture meaning**
+- *What:* The vector encodes semantic meaning, not keywords. Chunks with similar meaning produce vectors that are close in cosine distance, even if they share no words.
+- *Why it matters here:* This is the core reason vector search exists. Understanding it is what lets you explain why cosine similarity works as a retrieval metric.
+- *Interview:* "How does vector similarity search find relevant content without keyword matching?"
+
+**Embedding model changes require full re-embedding**
+- *What:* Vectors from different models (or different dimensions) live in incompatible spaces. A query embedded with model B cannot be compared against chunks embedded with model A.
+- *Why it matters here:* This is an architectural constraint — not a bug. If the embedding model changes, 1,260 existing chunks become stale and must be re-embedded.
+- *Interview:* "What happens to your vector store if you switch embedding models?"
+
+**Hosted vs open-source embedding models**
+- *What:* `text-embedding-3-small` is a hosted OpenAI API. Alternatives like `sentence-transformers` run locally. Trade-offs: hosted = simple, reliable, data leaves your environment; self-hosted = no per-token cost, full data control, but GPU infrastructure required.
+- *Why it matters here:* For Atlas, hosted is the right choice at this stage. For enterprise use, data privacy often requires self-hosted.
+- *Interview:* "What are the trade-offs between hosted and self-hosted embedding models?"
+
+---
+
 ## Build Tasks
 
 ### 1. Project Setup
@@ -133,42 +169,6 @@ Spring AI EmbeddingModel
         ▼
 Top-K Semantically Similar Chunks
 ```
-
----
-
-## LLM Fundamentals — Integrated into This Sprint
-
-Learn these alongside the implementation. Each concept explains a decision you are already making in code.
-
-**Tokens and tokenization**
-- *What:* The embedding model splits text into tokens — subword units, not words. `text-embedding-3-small` uses the cl100k_base tokenizer. "ChatClient" is one token; "ChatClientBuilder" may be two.
-- *Why it matters here:* Chunk size (512 tokens) is measured in tokens, not words or characters. Getting this wrong produces chunks that exceed the model's input limit.
-- *Interview:* "What is a token? Why do RAG systems measure chunk size in tokens rather than characters?"
-
-**Embedding models vs generative models**
-- *What:* An embedding model converts text into a fixed-size vector — no text output. A generative model produces text. Atlas uses both: `text-embedding-3-small` for indexing, Claude/GPT for answering.
-- *Why it matters here:* You are configuring Spring AI's `EmbeddingModel` — not `ChatModel`. Confusing the two is the most common setup mistake.
-- *Interview:* "What is the difference between `EmbeddingModel` and `ChatModel` in Spring AI?"
-
-**Embedding dimensions and model selection**
-- *What:* `text-embedding-3-small` outputs 1536-dimensional vectors. Dimensions define the size of the semantic space. More dimensions can capture more nuance but cost more storage and compute.
-- *Why it matters here:* The `chunks` table schema is fixed at `vector(1536)` for this model. If you switch models, the dimension may change and the schema must be updated.
-- *Interview:* "What does 1536 dimensions mean? What happens if you change the embedding model?"
-
-**Semantic representation — why vectors capture meaning**
-- *What:* The vector encodes semantic meaning, not keywords. Chunks with similar meaning produce vectors that are close in cosine distance, even if they share no words.
-- *Why it matters here:* This is the core reason vector search exists. Understanding it is what lets you explain why cosine similarity works as a retrieval metric.
-- *Interview:* "How does vector similarity search find relevant content without keyword matching?"
-
-**Embedding model changes require full re-embedding**
-- *What:* Vectors from different models (or different dimensions) live in incompatible spaces. A query embedded with model B cannot be compared against chunks embedded with model A.
-- *Why it matters here:* This is an architectural constraint — not a bug. If the embedding model changes, 1,260 existing chunks become stale and must be re-embedded.
-- *Interview:* "What happens to your vector store if you switch embedding models?"
-
-**Hosted vs open-source embedding models**
-- *What:* `text-embedding-3-small` is a hosted OpenAI API. Alternatives like `sentence-transformers` run locally. Trade-offs: hosted = simple, reliable, data leaves your environment; self-hosted = no per-token cost, full data control, but GPU infrastructure required.
-- *Why it matters here:* For Atlas, hosted is the right choice at this stage. For enterprise use, data privacy often requires self-hosted.
-- *Interview:* "What are the trade-offs between hosted and self-hosted embedding models?"
 
 ---
 
