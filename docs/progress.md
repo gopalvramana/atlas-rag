@@ -85,18 +85,18 @@ Query
 | # | What | Exit condition | Status |
 |---|---|---|:---:|
 | 3.1 | Flyway V2 migration — add `search_vector tsvector` + GIN index + trigger | `\d chunks` shows `search_vector`; `SELECT count(*) WHERE search_vector IS NOT NULL` = 1260 | ⬜ |
-| 3.2 | `BM25SearchService` — `to_tsquery` + `ts_rank` | Returns ranked results for keyword query; verified manually | ⬜ |
-| 3.3 | `HybridSearchService` — RRF fusion of vector + BM25 | Returns merged list; chunks in both lists rank higher than single-source chunks | ⬜ |
-| 3.4 | `Reranker` — score-weighted reordering of fused candidates | Top result is more relevant than either vector-only or BM25-only alone | ⬜ |
+| 3.2 | `KeywordSearchService` — `tsvector` + `to_tsquery` + `ts_rank` | Returns ranked results for keyword query; verified manually | ⬜ |
+| 3.3 | `HybridSearchService` — RRF fusion of vector + keyword search | Returns merged list; chunks in both lists rank higher than single-source chunks | ⬜ |
+| 3.4 | `Reranker` — score-weighted reordering of fused candidates | Top result is more relevant than either vector-only or keyword-only alone | ⬜ |
 | 3.5 | `ContextSelector` — token-aware trimming | Output fits within configured token budget; verified with jtokkit token count | ⬜ |
-| 3.6 | End-to-end comparison | 5 test queries with vector-only vs BM25-only vs hybrid documented | ⬜ |
+| 3.6 | End-to-end comparison | 5 test queries with vector-only vs keyword-only vs hybrid documented | ⬜ |
 
 ### Classes to build
 
 | Class | Module | Done |
 |---|---|:---:|
 | `V2__add_search_vector.sql` | `atlas-ingestion` (Flyway) | ⬜ |
-| `BM25SearchService` | `atlas-retrieval` | ⬜ |
+| `KeywordSearchService` | `atlas-retrieval` | ⬜ |
 | `HybridSearchService` | `atlas-retrieval` | ⬜ |
 | `Reranker` | `atlas-retrieval` | ⬜ |
 | `ContextSelector` | `atlas-retrieval` | ⬜ |

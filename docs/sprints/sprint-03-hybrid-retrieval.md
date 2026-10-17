@@ -27,9 +27,9 @@ Learn these before writing any code. Each concept explains a decision you are ab
 - *Interview:* "Your vector search returns poor results for API-specific queries. What would you investigate first?"
 
 **Semantic similarity vs lexical matching — when each wins**
-- *What:* Vector search excels at conceptual queries ("how does Spring AI handle context?"). BM25 excels at exact-match queries ("ChatClient.builder() method"). Neither dominates across all query types.
+- *What:* Vector search excels at conceptual queries ("how does Spring AI handle context?"). Keyword search (PostgreSQL `ts_rank`) excels at exact-match queries ("ChatClient.builder() method"). Neither dominates across all query types. BM25 is the standard algorithm for keyword ranking — what we implement here uses `ts_rank`, which is PostgreSQL's own lexical scorer, not true BM25.
 - *Why it matters here:* This is the architectural justification for every line of code in this sprint. If you cannot articulate this, you cannot defend the hybrid retrieval design.
-- *Interview:* "Why isn't vector search alone enough? Give a concrete example where BM25 beats vector search."
+- *Interview:* "Why isn't vector search alone enough? Give a concrete example where keyword search beats semantic search."
 
 **Retrieval quality depends on more than the embedding model**
 - *What:* Chunk size, overlap, Top-K value, reranking, and metadata filtering all affect what the LLM receives. A better embedding model cannot compensate for chunks that are too large, a Top-K that is too low, or missing a reranking step.
@@ -68,9 +68,14 @@ CREATE INDEX idx_chunks_search_vector ON chunks USING GIN(search_vector);
 UPDATE chunks SET search_vector = to_tsvector('english', content);
 ```
 
-### Step 2 — BM25SearchService
+### Step 2 — KeywordSearchService
 
-PostgreSQL full-text search using `to_tsquery` and `ts_rank`.
+PostgreSQL full-text search using `tsvector`, `to_tsquery`, and `ts_rank`.
+
+> **Note:** PostgreSQL's `ts_rank` is **not** BM25. BM25 is a specific probabilistic ranking
+> formula (used by Elasticsearch, Lucene). `ts_rank` is PostgreSQL's own coverage-based
+> ranking function. Both are lexical ranking approaches, but the scores are not equivalent.
+> True BM25 could be added later as a future enhancement.
 
 ```java
 // SELECT id, content, ..., ts_rank(search_vector, query) AS score
@@ -84,7 +89,7 @@ PostgreSQL full-text search using `to_tsquery` and `ts_rank`.
 Run both searches in parallel. Fuse the two ranked lists using Reciprocal Rank Fusion:
 
 ```
-RRF score(chunk) = 1/(k + rank_vector) + 1/(k + rank_bm25)
+RRF score(chunk) = 1/(k + rank_vector) + 1/(k + rank_keyword)
 where k = 60  (standard constant)
 ```
 
@@ -94,7 +99,7 @@ Chunks that appear in only one list still get credit for that rank.
 ### Step 4 — Reranker
 
 Score the fused Top-N candidates by relevance to the original query.
-Start with a simple cross-score reranker (score = vector_score × 0.7 + bm25_score × 0.3).
+Start with a simple cross-score reranker (score = vector_score × 0.7 + keyword_score × 0.3).
 This can be replaced with a Cohere cross-encoder in a later sprint.
 
 ### Step 5 — ContextSelector (token-aware trimming)
@@ -110,10 +115,10 @@ and total token count.
 
 Run 5 test queries. For each, compare:
 - Vector-only results (top 5)
-- BM25-only results (top 5)
+- Keyword-only results (top 5)
 - Hybrid + reranked results (top 5)
 
-Document where vector wins, where BM25 wins, and where hybrid beats both.
+Document where vector wins, where keyword wins, and where hybrid beats both.
 This comparison is an interview question in itself.
 
 ---
@@ -122,8 +127,8 @@ This comparison is an interview question in itself.
 
 | Class | Location | Responsibility |
 |---|---|---|
-| `BM25SearchService` | `atlas-retrieval` | PostgreSQL full-text search |
-| `HybridSearchService` | `atlas-retrieval` | RRF fusion of vector + BM25 |
+| `KeywordSearchService` | `atlas-retrieval` | PostgreSQL full-text search (`tsvector` / `ts_rank`) |
+| `HybridSearchService` | `atlas-retrieval` | RRF fusion of vector + keyword search |
 | `Reranker` | `atlas-retrieval` | Score and re-order fused candidates |
 | `ContextSelector` | `atlas-retrieval` | Token-aware trimming to fit LLM budget |
 | `RetrievedContext` | `atlas-retrieval` | Output value object passed to Sprint 4 |
@@ -134,7 +139,7 @@ This comparison is an interview question in itself.
 ## Concepts Learned
 
 - Why vector search alone is not enough (the most important retrieval question)
-- BM25 and how PostgreSQL implements it with `tsvector` / `ts_rank`
+- PostgreSQL keyword search — `tsvector`, GIN index, `to_tsquery`, `ts_rank` (and how this differs from true BM25)
 - Reciprocal Rank Fusion — how it works and why k=60
 - Reranking — bi-encoder vs cross-encoder, cost vs quality
 - Token budgets — why you cannot just dump all retrieved chunks into the prompt
@@ -152,11 +157,12 @@ After this sprint you must be able to answer these at depth:
 
 Vector search finds semantically similar chunks. But it misses exact matches.
 If a user asks "how do I use `ChatClient.builder()`", vector search may return
-chunks about the ChatClient concept. BM25 finds chunks that literally contain
+chunks about the ChatClient concept. Keyword search finds chunks that literally contain
 `ChatClient.builder`. Hybrid gives you both.
 
 **Other questions:**
-- What is BM25? How is it different from cosine similarity?
+- What is BM25? How does it differ from PostgreSQL's `ts_rank`? (BM25 is a probabilistic ranking formula; `ts_rank` is PostgreSQL's coverage-based scorer — both are lexical, but not equivalent. True BM25 is a future enhancement.)
+- What is `tsvector`? What does a GIN index do for full-text search?
 - What is Reciprocal Rank Fusion? Why k=60?
 - What is a reranker? When would you use a cross-encoder instead?
 - What is a token budget? Why can't you send all retrieved chunks to the LLM?
