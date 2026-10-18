@@ -1,4 +1,4 @@
-package com.atlas.retrieval;
+package com.atlas.retrieval.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.Executors;
 
 @Configuration
-class RetrievalConfig {
+    class RetrievalConfig {
 
     // Limits concurrent DB searches — prevents connection pool exhaustion under load.
     // Each hybrid search issues 2 concurrent queries (vector + keyword).
