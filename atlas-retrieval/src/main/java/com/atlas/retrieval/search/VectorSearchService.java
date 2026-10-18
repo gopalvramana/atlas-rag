@@ -1,4 +1,4 @@
-package com.atlas.retrieval;
+package com.atlas.retrieval.search;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

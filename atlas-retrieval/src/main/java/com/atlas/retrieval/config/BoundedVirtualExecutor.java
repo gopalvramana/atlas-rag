@@ -1,4 +1,4 @@
-package com.atlas.retrieval;
+package com.atlas.retrieval.config;
 
 import java.util.Collection;
 import java.util.List;
