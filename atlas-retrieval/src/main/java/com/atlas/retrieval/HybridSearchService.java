@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 public class HybridSearchService {
@@ -20,17 +19,16 @@ public class HybridSearchService {
     private static final int DEFAULT_TOP_K = 20;
     private static final int RRF_K = 60;
 
-    // Virtual threads — ideal for I/O-bound JDBC calls on Java 21
-    private static final ExecutorService executor =
-            Executors.newVirtualThreadPerTaskExecutor();
-
     private final VectorSearchService vectorSearch;
     private final KeywordSearchService keywordSearch;
+    private final ExecutorService executor;
 
     public HybridSearchService(VectorSearchService vectorSearch,
-                               KeywordSearchService keywordSearch) {
+                               KeywordSearchService keywordSearch,
+                               ExecutorService executor) {
         this.vectorSearch = vectorSearch;
         this.keywordSearch = keywordSearch;
+        this.executor = executor;
     }
 
     public List<SearchResult> search(String query) {
