@@ -1,5 +1,6 @@
 package com.atlas.retrieval;
 
+import com.atlas.core.model.SearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
