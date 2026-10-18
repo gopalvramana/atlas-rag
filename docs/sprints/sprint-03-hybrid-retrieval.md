@@ -50,7 +50,7 @@ Learn these before writing any code. Each concept explains a decision you are ab
 | Vector search | Captures semantic similarity — "how does Spring AI handle embeddings?" finds relevant chunks even if none of the words appear verbatim |
 | BM25 | Captures exact matches — `ChatClient`, `VectorStore`, `EmbeddingModel` are retrieved precisely by keyword |
 | RRF | Merges two ranked lists fairly without needing to normalise or compare their scores directly |
-| Rerank | Scores the merged candidates by how well each chunk actually answers the query — more expensive but more precise |
+| Rerank | Re-embeds the query and computes fresh cosine similarity against every candidate's stored embedding — gives every chunk (including keyword-only results) a consistent relevance score |
 | Context selection | Enforces a token budget; picks the highest-ranked chunks that fit within the LLM's context window |
 
 ---
@@ -98,9 +98,35 @@ Chunks that appear in only one list still get credit for that rank.
 
 ### Step 4 — Reranker
 
-Score the fused Top-N candidates by relevance to the original query.
-Start with a simple cross-score reranker (score = vector_score × 0.7 + keyword_score × 0.3).
-This can be replaced with a Cohere cross-encoder in a later sprint.
+Re-score each fused candidate by computing fresh cosine similarity between the query
+and each chunk's stored embedding. This is closer to how real-world rerankers work than
+simply combining the original retrieval scores.
+
+**How it works:**
+1. Embed the query → `float[]` (one OpenAI API call)
+2. Fetch stored embeddings for all candidate chunks in one DB query (`WHERE id IN (...)`)
+3. Compute cosine similarity between query embedding and each chunk embedding in Java
+4. Re-sort candidates by fresh cosine score descending
+
+**Why re-embed instead of reusing the retrieval score?**
+The vector search score reflects how similar the query is to the chunk at retrieval time.
+The reranker computes the same similarity but on the fused candidate set — which now includes
+chunks surfaced by keyword search that never went through vector ranking. Every candidate
+gets a consistent, comparable score from the same embedding model.
+
+**Reranker approaches — what exists in production:**
+
+| Approach | How | Accuracy | Cost |
+|---|---|---|---|
+| **Embedding reranker** ← *what Atlas uses* | Re-embed query, cosine vs stored chunk embeddings | Good | One embedding API call |
+| **Cross-encoder** (e.g. Cohere Rerank, BGE) | Model scores `(query, chunk)` pair together | Best | One API call per candidate (or batched) |
+| **LLM reranker** | Ask LLM to score relevance of each chunk | Highest | Very expensive at scale |
+
+A cross-encoder reads the query and chunk *together* — so it understands relevance as a
+pair, not as independent vectors. That is why cross-encoders outperform bi-encoder reranking.
+
+**Upgrade path:** the `Reranker` class signature stays the same. Swap the cosine
+implementation for a Cohere Rerank API call without changing any other class.
 
 ### Step 5 — ContextSelector (token-aware trimming)
 
@@ -129,7 +155,7 @@ This comparison is an interview question in itself.
 |---|---|---|
 | `KeywordSearchService` | `atlas-retrieval` | PostgreSQL full-text search (`tsvector` / `ts_rank`) |
 | `HybridSearchService` | `atlas-retrieval` | RRF fusion of vector + keyword search |
-| `Reranker` | `atlas-retrieval` | Score and re-order fused candidates |
+| `Reranker` | `atlas-retrieval` | Re-embed query; fetch stored chunk embeddings; cosine rerank. Upgrade path: swap for Cohere cross-encoder |
 | `ContextSelector` | `atlas-retrieval` | Token-aware trimming to fit LLM budget |
 | `RetrievedContext` | `atlas-retrieval` | Output value object passed to Sprint 4 |
 | `V2__add_search_vector.sql` | `atlas-ingestion` resources | Flyway migration |
@@ -141,7 +167,7 @@ This comparison is an interview question in itself.
 - Why vector search alone is not enough (the most important retrieval question)
 - PostgreSQL keyword search — `tsvector`, GIN index, `to_tsquery`, `ts_rank` (and how this differs from true BM25)
 - Reciprocal Rank Fusion — how it works and why k=60
-- Reranking — bi-encoder vs cross-encoder, cost vs quality
+- Reranking — embedding reranker (what Atlas uses), cross-encoder (Cohere/BGE), LLM reranker — accuracy vs cost trade-offs
 - Token budgets — why you cannot just dump all retrieved chunks into the prompt
 - Context window management
 - Retrieval precision vs recall trade-offs
