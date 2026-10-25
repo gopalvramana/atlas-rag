@@ -91,7 +91,8 @@ public class HybridSearchService {
                             original.sourceFile(),
                             original.version(),
                             original.chunkIndex(),
-                            e.getValue()
+                            e.getValue(),
+                            original.tokenCount()
                     );
                 })
                 .toList();

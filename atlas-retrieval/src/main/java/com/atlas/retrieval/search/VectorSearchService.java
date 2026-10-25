@@ -37,7 +37,7 @@ public class VectorSearchService {
 
         if (version != null && !version.isBlank()) {
             sql = """
-                SELECT id, content, source_file, version, chunk_index,
+                SELECT id, content, source_file, version, chunk_index, token_count,
                        1 - (embedding <=> ?::vector) AS score
                 FROM chunks
                 WHERE version = ?
@@ -47,7 +47,7 @@ public class VectorSearchService {
             params = new Object[]{vectorString, version, vectorString, topK};
         } else {
             sql = """
-                SELECT id, content, source_file, version, chunk_index,
+                SELECT id, content, source_file, version, chunk_index, token_count,
                        1 - (embedding <=> ?::vector) AS score
                 FROM chunks
                 ORDER BY embedding <=> ?::vector
@@ -63,7 +63,8 @@ public class VectorSearchService {
                         rs.getString("source_file"),
                         rs.getString("version"),
                         rs.getInt("chunk_index"),
-                        rs.getDouble("score")
+                        rs.getDouble("score"),
+                        rs.getInt("token_count")
                 ));
 
         log.info("Vector search for '{}' → {} results (top score: {})",

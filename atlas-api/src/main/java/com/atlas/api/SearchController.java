@@ -1,7 +1,7 @@
 package com.atlas.api;
 
-import com.atlas.retrieval.SearchResult;
-import com.atlas.retrieval.VectorSearchService;
+import com.atlas.core.model.SearchResult;
+import com.atlas.retrieval.search.VectorSearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

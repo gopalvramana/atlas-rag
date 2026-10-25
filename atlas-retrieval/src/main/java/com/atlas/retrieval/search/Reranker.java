@@ -44,21 +44,25 @@ public class Reranker {
         // One embedding API call for the query
         float[] queryEmbedding = embeddingModel.embed(query);
 
-        // One DB round trip to fetch all candidate embeddings
+        // One DB round trip to fetch all candidate embeddings + token counts
         List<UUID> ids = candidates.stream().map(SearchResult::id).toList();
-        Map<UUID, float[]> embeddingById = fetchEmbeddings(ids);
+        Map<UUID, EmbeddingRow> embeddingById = fetchEmbeddings(ids);
 
         // Re-score and re-sort
         List<SearchResult> reranked = candidates.stream()
                 .filter(r -> embeddingById.containsKey(r.id()))
-                .map(r -> new SearchResult(
-                        r.id(),
-                        r.content(),
-                        r.sourceFile(),
-                        r.version(),
-                        r.chunkIndex(),
-                        cosineSimilarity(queryEmbedding, embeddingById.get(r.id()))
-                ))
+                .map(r -> {
+                    EmbeddingRow row = embeddingById.get(r.id());
+                    return new SearchResult(
+                            r.id(),
+                            r.content(),
+                            r.sourceFile(),
+                            r.version(),
+                            r.chunkIndex(),
+                            cosineSimilarity(queryEmbedding, row.embedding()),
+                            row.tokenCount()
+                    );
+                })
                 .sorted(Comparator.comparingDouble(SearchResult::score).reversed())
                 .toList();
 
@@ -69,16 +73,19 @@ public class Reranker {
         return reranked;
     }
 
-    private Map<UUID, float[]> fetchEmbeddings(List<UUID> ids) {
+    private record EmbeddingRow(float[] embedding, int tokenCount) {}
+
+    private Map<UUID, EmbeddingRow> fetchEmbeddings(List<UUID> ids) {
         // Cast to text so JDBC receives the vector as a parseable string
-        String sql = "SELECT id, embedding::text FROM chunks WHERE id IN (:ids)";
+        String sql = "SELECT id, embedding::text, token_count FROM chunks WHERE id IN (:ids)";
         MapSqlParameterSource params = new MapSqlParameterSource("ids", ids);
 
-        Map<UUID, float[]> result = new HashMap<>();
+        Map<UUID, EmbeddingRow> result = new HashMap<>();
         namedJdbc.query(sql, params, rs -> {
             UUID id = UUID.fromString(rs.getString("id"));
             float[] embedding = parseVector(rs.getString("embedding"));
-            result.put(id, embedding);
+            int tokenCount = rs.getInt("token_count");
+            result.put(id, new EmbeddingRow(embedding, tokenCount));
         });
         return result;
     }

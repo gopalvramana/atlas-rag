@@ -1,6 +1,6 @@
 package com.atlas.api;
 
-import com.atlas.retrieval.SearchResult;
+import com.atlas.core.model.SearchResult;
 
 import java.util.List;
 

@@ -8,5 +8,6 @@ public record SearchResult(
         String sourceFile,
         String version,
         int chunkIndex,
-        double score
+        double score,
+        int tokenCount
 ) {}

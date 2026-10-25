@@ -49,7 +49,7 @@ public class KeywordSearchService {
 
         if (version != null && !version.isBlank()) {
             sql = """
-                SELECT id, content, source_file, version, chunk_index,
+                SELECT id, content, source_file, version, chunk_index, token_count,
                        ts_rank_cd(search_vector, query) AS score
                 FROM chunks, websearch_to_tsquery('english', ?) query
                 WHERE search_vector @@ query
@@ -60,7 +60,7 @@ public class KeywordSearchService {
             params = new Object[]{query, version, topK};
         } else {
             sql = """
-                SELECT id, content, source_file, version, chunk_index,
+                SELECT id, content, source_file, version, chunk_index, token_count,
                        ts_rank_cd(search_vector, query) AS score
                 FROM chunks, websearch_to_tsquery('english', ?) query
                 WHERE search_vector @@ query
@@ -77,7 +77,8 @@ public class KeywordSearchService {
                         rs.getString("source_file"),
                         rs.getString("version"),
                         rs.getInt("chunk_index"),
-                        rs.getDouble("score")
+                        rs.getDouble("score"),
+                        rs.getInt("token_count")
                 ));
 
         log.info("Keyword search for '{}' → {} results (top score: {})",
