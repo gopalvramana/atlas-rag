@@ -7,7 +7,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Manual debug test — runs against the real DB and real OpenAI.
@@ -22,6 +25,12 @@ import java.util.List;
  */
 @SpringBootTest
 class RetrievalPipelineDebugTest {
+
+    @Autowired
+    private VectorSearchService vectorSearch;
+
+    @Autowired
+    private KeywordSearchService keywordSearch;
 
     @Autowired
     private HybridSearchService hybridSearch;
@@ -113,6 +122,91 @@ class RetrievalPipelineDebugTest {
             System.out.println(r.content());
             System.out.println("-".repeat(80));
         }
+    }
+
+    @Test
+    void compareStrategies() {
+        int topK = 5;
+        String version = "1.1.5";
+
+        for (String query : TEST_QUERIES) {
+            System.out.println("\n" + "=".repeat(90));
+            System.out.println("QUERY: " + query);
+            System.out.println("=".repeat(90));
+
+            List<SearchResult> vectorResults  = vectorSearch.search(query, topK, version);
+            List<SearchResult> keywordResults = keywordSearch.search(query, topK, version);
+            List<SearchResult> hybridResults  = hybridSearch.search(query, topK, version);
+
+            // Print each strategy's top-5 source files
+            System.out.println("\n  VECTOR-ONLY (cosine similarity):");
+            vectorResults.forEach(r -> System.out.printf("    [%.4f] %s (chunk %d)%n",
+                    r.score(), shortPath(r.sourceFile()), r.chunkIndex()));
+
+            System.out.println("\n  KEYWORD-ONLY (ts_rank_cd):");
+            if (keywordResults.isEmpty()) {
+                System.out.println("    (no results — query has no indexable lexemes)");
+            } else {
+                keywordResults.forEach(r -> System.out.printf("    [%.4f] %s (chunk %d)%n",
+                        r.score(), shortPath(r.sourceFile()), r.chunkIndex()));
+            }
+
+            System.out.println("\n  HYBRID (RRF fusion):");
+            hybridResults.forEach(r -> System.out.printf("    [%.4f] %s (chunk %d)%n",
+                    r.score(), shortPath(r.sourceFile()), r.chunkIndex()));
+
+            // Overlap analysis
+            Set<String> vectorIds  = ids(vectorResults);
+            Set<String> keywordIds = ids(keywordResults);
+            Set<String> hybridIds  = ids(hybridResults);
+
+            Set<String> onlyVector  = diff(vectorIds, keywordIds);
+            Set<String> onlyKeyword = diff(keywordIds, vectorIds);
+            Set<String> inBoth      = intersect(vectorIds, keywordIds);
+            Set<String> hybridExtra = diff(hybridIds, union(vectorIds, keywordIds));
+
+            System.out.println("\n  OVERLAP ANALYSIS:");
+            System.out.println("    In both vector + keyword : " + inBoth.size());
+            System.out.println("    Only in vector           : " + onlyVector.size());
+            System.out.println("    Only in keyword          : " + onlyKeyword.size());
+            System.out.println("    Hybrid adds new chunks   : " + hybridExtra.size());
+        }
+
+        System.out.println("\n" + "=".repeat(90));
+        System.out.println("COMPARISON COMPLETE");
+        System.out.println("=".repeat(90));
+    }
+
+    // ---- helpers ----
+
+    private Set<String> ids(List<SearchResult> results) {
+        return results.stream()
+                .map(r -> r.id().toString())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private Set<String> diff(Set<String> a, Set<String> b) {
+        Set<String> result = new LinkedHashSet<>(a);
+        result.removeAll(b);
+        return result;
+    }
+
+    private Set<String> intersect(Set<String> a, Set<String> b) {
+        Set<String> result = new LinkedHashSet<>(a);
+        result.retainAll(b);
+        return result;
+    }
+
+    private Set<String> union(Set<String> a, Set<String> b) {
+        Set<String> result = new LinkedHashSet<>(a);
+        result.addAll(b);
+        return result;
+    }
+
+    private String shortPath(String path) {
+        // Show just the filename, not the full antora path
+        int slash = path.lastIndexOf('/');
+        return slash >= 0 ? path.substring(slash + 1) : path;
     }
 
     private String truncate(String text, int maxLen) {
