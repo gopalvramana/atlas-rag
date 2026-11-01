@@ -11,8 +11,8 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 |---|---|:---:|
 | 1 | Embedding Foundation — vector DB, ingestion pipeline | ✅ Done |
 | 2 | Knowledge Ingestion — fetch → parse → chunk → embed → store | ✅ Done |
-| 3 | Hybrid Retrieval — BM25 + vector + RRF + rerank + context selection | 🟡 In progress |
-| 4 | RAG Question Answering — LLM generation with retrieved context | ⬜ Not started |
+| 3 | Hybrid Retrieval — keyword + vector + RRF + rerank + context selection | ✅ Done |
+| 4 | RAG Question Answering — LLM generation with retrieved context | 🟡 In progress |
 | 5 | Agentic AI — tool calling, ReAct loop | ⬜ Not started |
 | 6 | Advanced AI Applications — memory, streaming, model routing | ⬜ Not started |
 | 7 | Evaluation + Observability | ⬜ Not started |
@@ -45,66 +45,56 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 | Parser | `AsciiDocParser` | Converts AsciiDoc → plain text using AsciidoctorJ + Jsoup; strips markup |
 | Chunker | `SlidingWindowChunker` | 512-token windows, 64-token overlap, jtokkit cl100k_base tokenizer |
 | Embedding | Spring AI `EmbeddingModel` | `text-embedding-3-small`, 1536 dimensions |
-| Store | Spring AI `VectorStore` (pgvector) | Writes vectors to `chunks` table |
+| Store | `IngestionPipeline` | Deduplicates by `(content_hash, version)`; writes to `chunks` table |
 | Orchestrator | `IngestionPipeline` | Wires fetch → parse → chunk → embed → store |
 
-**Verified:** **1,260 chunks** loaded in `atlas_rag.chunks`
+**Verified:** **1,260 chunks** loaded — 516 at v1.0.0, 744 at v1.1.5
 
-**atlas-retrieval (vector search)** — built and tested
+**Data integrity constraints:**
+- `UNIQUE (content_hash, version)` — prevents duplicate content within a version
+- `UNIQUE (source_file, chunk_index, version)` — prevents double-inserting same positional chunk (V3 migration)
 
-| Component | Class | What it does |
-|---|---|---|
-| Vector search | `VectorSearchService` | Embeds the query, runs cosine similarity (`<=>`) against `chunks.embedding`, returns Top-K with score |
-| Result type | `SearchResult` | `id`, `content`, `source_file`, `version`, `chunk_index`, `score` |
+### Sprint 3 — Hybrid Retrieval ✅
 
-**Verified:** End-to-end search working. Test query returned score ~0.71.
-
----
-
-## 🟡 Sprint 3 — Hybrid Retrieval (in progress)
-
-Goal: build the complete retrieval pipeline from query to a trimmed context block
-ready for the LLM in Sprint 4.
+Full retrieval pipeline from query to token-budget-respecting context block.
 
 ```
 Query
-  ├── Semantic Search (vector / cosine)
-  └── BM25 Search    (full-text / tsvector)
+  ├── VectorSearchService  (cosine similarity via pgvector)
+  └── KeywordSearchService (tsvector + ts_rank_cd via GIN index)
+              ↓ concurrent CompletableFuture
+         HybridSearchService (RRF fusion, k=60)
               ↓
-         Merge via RRF
+           Reranker (re-embed query → cosine vs stored embeddings)
               ↓
-           Rerank
+        ContextSelector (greedy token-budget selection)
               ↓
-  Context Selection + Token-Aware Trimming
-              ↓
-     RetrievedContext  →  Sprint 4
+       RetrievedContext → Sprint 4
 ```
 
-### Steps
-
-| # | What | Exit condition | Status |
+| Step | Class | What it does | Status |
 |---|---|---|:---:|
-| 3.1 | Flyway V2 migration — add `search_vector tsvector` + GIN index + trigger | `\d chunks` shows `search_vector`; `SELECT count(*) WHERE search_vector IS NOT NULL` = 1260 | ⬜ |
-| 3.2 | `KeywordSearchService` — `tsvector` + `to_tsquery` + `ts_rank` | Returns ranked results for keyword query; verified manually | ⬜ |
-| 3.3 | `HybridSearchService` — RRF fusion of vector + keyword search | Returns merged list; chunks in both lists rank higher than single-source chunks | ⬜ |
-| 3.4 | `Reranker` — score-weighted reordering of fused candidates | Top result is more relevant than either vector-only or keyword-only alone | ⬜ |
-| 3.5 | `ContextSelector` — token-aware trimming | Output fits within configured token budget; verified with jtokkit token count | ⬜ |
-| 3.6 | End-to-end comparison | 5 test queries with vector-only vs keyword-only vs hybrid documented | ⬜ |
+| 3.1 | `V2__add_search_vector.sql` | Adds `tsvector` column, GIN index, auto-update trigger | ✅ |
+| 3.2 | `KeywordSearchService` | `websearch_to_tsquery` + `ts_rank_cd`; stopword guard | ✅ |
+| 3.3 | `HybridSearchService` | Concurrent search + RRF fusion | ✅ |
+| 3.4 | `Reranker` | Re-embed query; batch-fetch stored embeddings; cosine rerank | ✅ |
+| 3.5 | `ContextSelector` + `RetrievalPipeline` | Token-budget greedy selection; pipeline orchestrator | ✅ |
+| 3.6 | `compareStrategies` test | 5 queries: vector vs keyword vs hybrid documented | ✅ |
 
-### Classes to build
+**Supporting classes:**
+- `BoundedVirtualExecutor` + `RetrievalConfig` — Spring-managed virtual thread executor with semaphore admission control
+- `RetrievedContext` — output record: chunks, totalTokens, tokenBudget
+- `SearchResult` — moved to `atlas-core`; carries tokenCount from ingestion
+- `ChunkRepository.findLatestVersion()` — auto-resolves latest version when none specified
 
-| Class | Module | Done |
-|---|---|:---:|
-| `V2__add_search_vector.sql` | `atlas-ingestion` (Flyway) | ⬜ |
-| `KeywordSearchService` | `atlas-retrieval` | ⬜ |
-| `HybridSearchService` | `atlas-retrieval` | ⬜ |
-| `Reranker` | `atlas-retrieval` | ⬜ |
-| `ContextSelector` | `atlas-retrieval` | ⬜ |
-| `RetrievedContext` | `atlas-retrieval` | ⬜ |
+**Key findings from Task 6 comparison:**
+- Vector wins for conceptual queries ("difference between EmbeddingModel and ChatModel")
+- Keyword wins for configuration/exact-identifier queries ("how to configure OpenAI API key")
+- Hybrid consistently surfaces chunks missed by either strategy alone
 
 ---
 
-## ⬜ Sprint 4 — RAG Question Answering (not started)
+## 🟡 Sprint 4 — RAG Question Answering (in progress)
 
 Goal: take `RetrievedContext` from Sprint 3 and produce a grounded, cited LLM response.
 The core challenge is LLM-side context management — assembling a prompt that fits within
