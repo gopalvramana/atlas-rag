@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages = {"com.atlas.api", "com.atlas.retrieval"})
+@SpringBootApplication(scanBasePackages = {"com.atlas.api", "com.atlas.retrieval", "com.atlas.agent"})
 @EntityScan(basePackages = "com.atlas.core.model")
 @EnableJpaRepositories(basePackages = "com.atlas.core.repository")
 public class ApiApplication {

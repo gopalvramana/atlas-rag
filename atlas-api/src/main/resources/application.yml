@@ -21,3 +21,11 @@ spring:
       embedding:
         options:
           model: text-embedding-3-small
+      chat:
+        options:
+          model: gpt-4o-mini
+
+atlas:
+  llm:
+    context-window: 128000
+    output-reserve: 1500
