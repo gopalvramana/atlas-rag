@@ -1,7 +1,7 @@
 package com.atlas.agent;
 
+import com.atlas.core.model.RagResponse;
 import com.atlas.core.model.RetrievedContext;
-import com.atlas.core.model.SearchResult;
 import com.atlas.retrieval.search.RetrievalPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

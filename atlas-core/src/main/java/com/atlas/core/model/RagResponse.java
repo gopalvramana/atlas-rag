@@ -1,4 +1,4 @@
-package com.atlas.agent;
+package com.atlas.core.model;
 
 import java.util.List;
 

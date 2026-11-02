@@ -1,6 +1,6 @@
 package com.atlas.api;
 
-import com.atlas.agent.RagResponse;
+import com.atlas.core.model.RagResponse;
 import com.atlas.agent.RagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
