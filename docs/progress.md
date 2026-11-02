@@ -12,7 +12,7 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 | 1 | Embedding Foundation — vector DB, ingestion pipeline | ✅ Done |
 | 2 | Knowledge Ingestion — fetch → parse → chunk → embed → store | ✅ Done |
 | 3 | Hybrid Retrieval — keyword + vector + RRF + rerank + context selection | ✅ Done |
-| 4 | RAG Question Answering — LLM generation with retrieved context | 🟡 In progress |
+| 4 | RAG Question Answering — LLM generation with retrieved context | ✅ Done |
 | 5 | Agentic AI — tool calling, ReAct loop | ⬜ Not started |
 | 6 | Advanced AI Applications — memory, streaming, model routing | ⬜ Not started |
 | 7 | Evaluation + Observability | ⬜ Not started |
@@ -94,32 +94,31 @@ Query
 
 ---
 
-## 🟡 Sprint 4 — RAG Question Answering (in progress)
-
-Goal: take `RetrievedContext` from Sprint 3 and produce a grounded, cited LLM response.
-The core challenge is LLM-side context management — assembling a prompt that fits within
-the model's context window while reserving space for output and avoiding duplicate chunks.
+## Sprint 4 — RAG Question Answering ✅
 
 ```
-RetrievedContext  →  PromptAssembler  →  Token Budget Check  →  ChatModel  →  RagResponse
+Question → RetrievalPipeline → PromptAssembler → ChatModel (gpt-4o-mini) → RagResponse
 ```
 
-### Steps
+Two-layer token budget:
+- Sprint 3 retrieval budget: 6000 tokens for chunks
+- Sprint 4 prompt budget: 128K window − system prompt − question − 1500 output reserve = chunk budget
 
-| # | What | Exit condition | Status |
-|---|---|---|:---:|
-| 4.1 | `PromptAssembler` — system prompt + question + chunks + output reserve | Token breakdown logged; correct chunks selected within budget | ⬜ |
-| 4.2 | Context overflow handling — trim / reject | Overflow triggers trim; no chunks → structured "cannot answer" | ⬜ |
-| 4.3 | `RagService` — orchestrates retrieval → prompt → LLM → response | End-to-end call returns answer + citations | ⬜ |
-| 4.4 | Spring AI `ChatModel` integration | Real LLM call succeeds; token usage logged | ⬜ |
-| 4.5 | Grounding + hallucination control | System prompt enforces context-only answers; verified on 3 out-of-scope questions | ⬜ |
-| 4.6 | `POST /api/v1/ask` endpoint | Returns `{ answer, citations, tokenUsage }` for 10 test questions | ⬜ |
-
-### Classes to build
-
-| Class | Module | Done |
+| Step | What | Status |
 |---|---|:---:|
-| `PromptAssembler` | `atlas-agent` | ⬜ |
-| `RagService` | `atlas-agent` | ⬜ |
-| `RagResponse` | `atlas-agent` | ⬜ |
-| `AskController` | `atlas-api` | ⬜ |
+| 4.1 | `PromptAssembler` — system + question + chunk budget + trim | ✅ |
+| 4.2 | Context overflow — trim from bottom; empty → "cannot answer" | ✅ |
+| 4.3 | `RagService` — retrieval → prompt → LLM → response | ✅ |
+| 4.4 | Spring AI `ChatModel` integration (gpt-4o-mini, temp=0.1) | ✅ |
+| 4.5 | Grounding — system prompt enforces context-only; verified | ✅ |
+| 4.6 | `POST /api/v1/ask` → `{ answer, citations, tokenUsage }` | ✅ |
+| 4.7 | 10 real questions tested | ✅ |
+
+**Results: 8/10 answered correctly; 2 correct "cannot answer" (ReAct, EmbeddingModel vs ChatModel comparison — not in corpus). No hallucinations observed.**
+
+| Class | Module |
+|---|---|
+| `RagResponse` | `atlas-agent` |
+| `PromptAssembler` | `atlas-agent` |
+| `RagService` | `atlas-agent` |
+| `AskController` | `atlas-api` |
