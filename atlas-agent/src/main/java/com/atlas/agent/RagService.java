@@ -61,7 +61,7 @@ public class RagService {
                 List.of(new SystemMessage(assembled.systemPrompt()), new UserMessage(userContent)),
                 OpenAiChatOptions.builder()
                         .temperature(0.1)
-                        .maxTokens(assembled.outputReserve())
+                        .maxTokens(4096)
                         .build());
 
         ChatResponse response = chatModel.call(prompt);
