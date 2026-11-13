@@ -4,6 +4,7 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
+import com.atlas.core.model.CompileResult;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -29,8 +30,6 @@ public class CompileJavaTool {
                 "Java compiler not available — Atlas must run on a JDK, not a JRE");
         }
     }
-
-    public record CompileResult(boolean compiled, List<String> errors) {}
 
     @Tool(description = """
             Compile a Java source file and return compilation errors.
