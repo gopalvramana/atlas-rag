@@ -5,12 +5,9 @@ import com.atlas.core.model.RetrievedContext;
 import com.atlas.retrieval.search.RetrievalPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,15 +26,17 @@ public class RagService {
 
     private final RetrievalPipeline retrievalPipeline;
     private final PromptAssembler promptAssembler;
-    private final ChatModel chatModel;
+    private final ChatClient chatClient;
 
     public RagService(
             RetrievalPipeline retrievalPipeline,
             PromptAssembler promptAssembler,
-            ChatModel chatModel) {
+            ChatClient.Builder chatClientBuilder) {
         this.retrievalPipeline = retrievalPipeline;
         this.promptAssembler   = promptAssembler;
-        this.chatModel         = chatModel;
+        this.chatClient        = chatClientBuilder
+                .defaultAdvisors(new SimpleLoggerAdvisor())
+                .build();
     }
 
     public RagResponse ask(String question) {
@@ -57,14 +56,11 @@ public class RagService {
         String contextBlock = promptAssembler.buildContextBlock(assembled.selectedChunks());
         String userContent  = contextBlock + "\nQuestion: " + question;
 
-        Prompt prompt = new Prompt(
-                List.of(new SystemMessage(assembled.systemPrompt()), new UserMessage(userContent)),
-                OpenAiChatOptions.builder()
-                        .temperature(0.1)
-                        .maxTokens(4096)
-                        .build());
-
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt()
+                .system(assembled.systemPrompt())
+                .user(userContent)
+                .call()
+                .chatResponse();
         String answer = response.getResult().getOutput().getText();
 
         var usage = response.getMetadata().getUsage();

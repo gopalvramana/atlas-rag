@@ -3,6 +3,8 @@ package com.atlas.agent.tools;
 import com.atlas.core.model.GitHubResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,7 @@ import java.util.List;
 @Component
 public class SearchGithubTool {
 
+    private static final Logger log = LoggerFactory.getLogger(SearchGithubTool.class);
     private static final String REPO = "spring-projects/spring-ai";
 
     private final String token;
@@ -44,6 +47,8 @@ public class SearchGithubTool {
     public List<GitHubResult> searchGithub(
             @ToolParam(description = "Search terms to look for in issues and PRs") String query) {
 
+        log.info("SearchGithubTool: query='{}'", query);
+
         try {
             String encodedQuery = URLEncoder.encode(
                     query + " repo:" + REPO, StandardCharsets.UTF_8);
@@ -61,9 +66,7 @@ public class SearchGithubTool {
                     httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                return List.of(new GitHubResult(
-                        "GitHub API error", url,
-                        "error", "Status " + response.statusCode() + ": " + response.body()));
+                return List.of(new GitHubResult("GitHub API error", url,"error", "Status " + response.statusCode() + ": " + response.body()));
             }
 
             JsonNode root  = objectMapper.readTree(response.body());
@@ -80,6 +83,7 @@ public class SearchGithubTool {
 
                 results.add(new GitHubResult(title, htmlUrl, state, excerpt));
             }
+            log.info("SearchGithubTool: returning {} results", results.size());
             return results;
 
         } catch (Exception e) {

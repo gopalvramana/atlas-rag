@@ -2,12 +2,14 @@ package com.atlas.agent.tools;
 
 import com.atlas.core.model.SearchResult;
 import com.atlas.retrieval.search.RetrievalPipeline;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Exposes RetrievalPipeline as an LLM-callable tool.
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SearchDocsTool {
+
+    private static final Logger log = LoggerFactory.getLogger(SearchDocsTool.class);
 
     private final RetrievalPipeline retrievalPipeline;
 
@@ -36,12 +40,16 @@ public class SearchDocsTool {
     public String searchDocs(
             @ToolParam(description = "The search query — rephrase the user question as a focused search query") String query) {
 
+        log.info("SearchDocsTool: query='{}'", query);
+
         List<SearchResult> chunks = retrievalPipeline.retrieve(query).chunks();
 
         if (chunks.isEmpty()) {
+            log.warn("SearchDocsTool: no chunks found for query='{}'", query);
             return "No relevant documentation found for: " + query;
         }
 
+        log.info("SearchDocsTool: returning {} chunks", chunks.size());
         return chunks.stream()
                 .map(c -> "[%s @ %s, chunk %d]\n%s".formatted(
                         c.sourceFile(), c.version(), c.chunkIndex(), c.content()))

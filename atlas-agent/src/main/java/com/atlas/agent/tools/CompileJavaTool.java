@@ -5,6 +5,8 @@ import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
 import com.atlas.core.model.CompileResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -20,6 +22,8 @@ import java.util.regex.Pattern;
 
 @Component
 public class CompileJavaTool {
+
+    private static final Logger log = LoggerFactory.getLogger(CompileJavaTool.class);
 
     private final JavaCompiler compiler;
 
@@ -38,6 +42,8 @@ public class CompileJavaTool {
             """)
     public CompileResult compileJava(
             @ToolParam(description = "A complete Java class source code to compile") String source) {
+
+        log.info("CompileJavaTool: compiling class='{}'", extractClassName(source));
 
         Path tempDir  = null;
         Path tempFile = null;
@@ -73,6 +79,7 @@ public class CompileJavaTool {
                                 d.getMessage(Locale.ENGLISH)))
                         .toList();
 
+                log.info("CompileJavaTool: compiled={} errors={}", success, errors.size());
                 return new CompileResult(success, errors);
             }
 
