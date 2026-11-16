@@ -29,3 +29,8 @@ atlas:
   llm:
     context-window: 128000
     output-reserve: 1500
+
+logging:
+  level:
+    org.springframework.ai: DEBUG
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG

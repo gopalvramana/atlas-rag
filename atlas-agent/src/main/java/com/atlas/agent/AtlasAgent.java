@@ -8,8 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.support.ToolCallbacks;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,13 +59,27 @@ public class AtlasAgent {
     public AgentResponse ask(String question) {
         log.info("AtlasAgent: question='{}'", question);
 
+        List<String> toolsUsed = new ArrayList<>();
+
+        ToolCallback[] wrapped = wrap(
+                ToolCallbacks.from(searchDocsTool, compileJavaTool, searchGithubTool),
+                toolsUsed);
+
         String answer = chatClient.prompt()
                 .user(question)
-                .tools(searchDocsTool, compileJavaTool, searchGithubTool)
+                .toolCallbacks(wrapped)
                 .call()
                 .content();
 
-        log.info("AtlasAgent: answer generated");
-        return new AgentResponse(answer, List.of());
+        log.info("AtlasAgent: answer generated, toolsUsed={}", toolsUsed);
+        return new AgentResponse(answer, List.copyOf(toolsUsed));
+    }
+
+    private static ToolCallback[] wrap(ToolCallback[] callbacks, List<String> toolsUsed) {
+        ToolCallback[] wrapped = new ToolCallback[callbacks.length];
+        for (int i = 0; i < callbacks.length; i++) {
+            wrapped[i] = new RecordingToolCallback(callbacks[i], toolsUsed);
+        }
+        return wrapped;
     }
 }

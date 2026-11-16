@@ -49,10 +49,12 @@ public class SearchDocsTool {
             return "No relevant documentation found for: " + query;
         }
 
-        log.info("SearchDocsTool: returning {} chunks", chunks.size());
-        return chunks.stream()
+        String result = chunks.stream()
                 .map(c -> "[%s @ %s, chunk %d]\n%s".formatted(
                         c.sourceFile(), c.version(), c.chunkIndex(), c.content()))
                 .collect(Collectors.joining("\n\n---\n\n"));
+        log.info("SearchDocsTool: returning {} chunks, result length={}", chunks.size(), result.length());
+        log.debug("SearchDocsTool: result=\n{}", result);
+        return result;
     }
 }
