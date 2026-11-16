@@ -13,8 +13,8 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 | 2 | Knowledge Ingestion — fetch → parse → chunk → embed → store | ✅ Done |
 | 3 | Hybrid Retrieval — keyword + vector + RRF + rerank + context selection | ✅ Done |
 | 4 | RAG Question Answering — LLM generation with retrieved context | ✅ Done |
-| 5 | Agentic AI — tool calling, ReAct loop | ⬜ Not started |
-| 6 | Advanced AI Applications — memory, streaming, model routing | ⬜ Not started |
+| 5 | Agentic AI — tool calling, ReAct loop | ✅ Done |
+| 6 | Advanced AI Applications — memory, streaming, model routing | 🟡 In progress |
 | 7 | Evaluation + Observability | ⬜ Not started |
 | 8 | MCP Integration | ⬜ Not started |
 | 9 | Enterprise Production AI Architecture | ⬜ Not started |
@@ -118,7 +118,49 @@ Two-layer token budget:
 
 | Class | Module |
 |---|---|
-| `RagResponse` | `atlas-agent` |
+| `RagResponse` | `atlas-core` |
 | `PromptAssembler` | `atlas-agent` |
 | `RagService` | `atlas-agent` |
 | `AskController` | `atlas-api` |
+
+---
+
+## Sprint 5 — Agentic AI ✅
+
+```
+Question → AtlasAgent → ChatClient (ReAct loop)
+                              ├── searchDocs   → RetrievalPipeline
+                              ├── compileJava  → javax.tools.JavaCompiler
+                              └── searchGithub → GitHub REST API
+                         → AgentResponse { answer, toolsUsed }
+```
+
+Spring AI manages the full ReAct loop automatically. The model calls tools as needed
+across multiple iterations; each tool result is fed back until the model returns a
+final text answer.
+
+| Step | What | Status |
+|---|---|:---:|
+| 5.1 | `SearchDocsTool` — wraps `RetrievalPipeline` as `@Tool` | ✅ |
+| 5.2 | `CompileJavaTool` — in-process Java compilation via `javax.tools` | ✅ |
+| 5.3 | `SearchGithubTool` — GitHub Issues/PR search via REST API | ✅ |
+| 5.4 | `AtlasAgent` — `ChatClient` with `SimpleLoggerAdvisor`, ReAct loop | ✅ |
+| 5.5 | `AgentController` — `POST /api/v1/agent` | ✅ |
+| 5.6 | `RecordingToolCallback` — decorator records toolsUsed per request | ✅ |
+| 5.7 | Three test questions verified (single-tool and multi-tool) | ✅ |
+
+**Key observations from testing:**
+- Model issues parallel tool calls in a single turn (searchDocs + searchGithub fired together)
+- compileJava retried 3× on failure — model attempts self-correction
+- toolsUsed correctly captures all iterations: `[searchDocs, searchGithub, compileJava, compileJava, compileJava]`
+- 29K prompt tokens consumed for a 5-iteration multi-tool question (context grows each turn)
+
+| Class | Module |
+|---|---|
+| `SearchDocsTool` | `atlas-agent` |
+| `CompileJavaTool` | `atlas-agent` |
+| `SearchGithubTool` | `atlas-agent` |
+| `AtlasAgent` | `atlas-agent` |
+| `RecordingToolCallback` | `atlas-agent` |
+| `AgentResponse` | `atlas-core` |
+| `AgentController` | `atlas-api` |
