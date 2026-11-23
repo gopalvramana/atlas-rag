@@ -164,3 +164,25 @@ final text answer.
 | `RecordingToolCallback` | `atlas-agent` |
 | `AgentResponse` | `atlas-core` |
 | `AgentController` | `atlas-api` |
+
+---
+
+## Sprint 6 — Advanced AI Applications 🟡
+
+Not started in code yet. Design-before-code discussion comes first.
+
+| Step | What | Status |
+|---|---|:---:|
+| 6.1 | Streaming — `GET /api/v1/ask/stream`, SSE `Flux<String>`, final `event: done` carries full response (spec: `PLAN.md` §2.5) | ⬜ Next |
+| 6.2 | Conversation memory — design TBD | ⬜ |
+| 6.3 | Model routing — design TBD | ⬜ |
+
+**Next step:** agree streaming design (e.g. `ChatClient.stream()` in `RagService`, how citations
+and token usage arrive in the final `done` event) before writing code.
+
+---
+
+## Housekeeping
+
+- 2026-11-23 — `PLAN.md` §3 tracker synced with actual progress (steps 1–5 and 7 marked done
+  with commits; it had not been updated since the rebuild started).

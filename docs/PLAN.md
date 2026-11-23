@@ -215,13 +215,13 @@ One tool, `ask_atlas(query, version)`, stdio transport, delegates to `atlas-retr
 
 | # | Module | Exit condition | Status | Commit |
 |---|---|---|---|---|
-| 1 | `infra` | Flyway migration applies cleanly; `\d chunks` shows correct schema | ⬜ Not started | |
-| 2 | `atlas-core` | Domain model compiles; unit tests pass | ⬜ Not started | |
-| 3 | `atlas-ingestion` | 1,000+ chunks in DB (target: 570 across 3 versions, matching v1) | ⬜ Not started | |
-| 4 | `atlas-retrieval` | Top-5/8 retrieval correct for 10 hand-checked questions | ⬜ Not started | |
-| 5 | `atlas-api` (basic) | `POST /api/v1/ask` returns valid structured JSON for 10 test questions | ⬜ Not started | |
-| 6 | `atlas-api` (streaming) | Browser/curl shows SSE token stream | ⬜ Not started | |
-| 7 | `atlas-agent` | Agent calls `searchDocs` before answering; `compileJavaSnippet` before returning code | ⬜ Not started | |
+| 1 | `infra` | Flyway migration applies cleanly; `\d chunks` shows correct schema | ✅ Done (V1–V3 migrations) | `28d405a`, `9f9a384` |
+| 2 | `atlas-core` | Domain model compiles; unit tests pass | ✅ Done (compiles; only a DB connectivity test so far, no domain unit tests) | `28d405a` |
+| 3 | `atlas-ingestion` | 1,000+ chunks in DB (target: 570 across 3 versions, matching v1) | ✅ Done (1,260 chunks across 2 versions: v1.0.0, v1.1.5) | `6295ebb` |
+| 4 | `atlas-retrieval` | Top-5/8 retrieval correct for 10 hand-checked questions | ✅ Done (hybrid + RRF + rerank; 5-query strategy comparison, exercised by 10 Sprint 4 questions) | `d474717` |
+| 5 | `atlas-api` (basic) | `POST /api/v1/ask` returns valid structured JSON for 10 test questions | ✅ Done (8/10 correct, 2 correct "cannot answer") | `d5726f9` |
+| 6 | `atlas-api` (streaming) | Browser/curl shows SSE token stream | 🟡 Next (Sprint 6) | |
+| 7 | `atlas-agent` | Agent calls `searchDocs` before answering; `compileJavaSnippet` before returning code | ✅ Done (built out of order in Sprint 5; tool is named `compileJava`) | `31d327c` |
 | 8 | Prompt caching | Cache hit/miss + latency delta logged | ⬜ Not started | |
 | 9 | `atlas-evals` | 50-question dataset; CI job visible; <80% blocks merge | ⬜ Not started | |
 | 10 | `atlas-mcp` | Claude Desktop calls `ask_atlas`, gets a response | ⬜ Not started | |
