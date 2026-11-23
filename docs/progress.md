@@ -175,10 +175,18 @@ Not started in code yet. Design-before-code discussion comes first.
 |---|---|:---:|
 | 6.1 | Streaming — `GET /api/v1/ask/stream`, SSE `Flux<String>`, final `event: done` carries full response (spec: `PLAN.md` §2.5) | ⬜ Next |
 | 6.2 | Conversation memory — design TBD | ⬜ |
-| 6.3 | Model routing — design TBD | ⬜ |
+| 6.3 | Model routing + LLM token budgets — outbound rate limiting at the gateway layer: per-user token budgets, 429 backoff, cheaper-model fallback (ADR-023) — design TBD | ⬜ |
 
 **Next step:** agree streaming design (e.g. `ChatClient.stream()` in `RagService`, how citations
 and token usage arrive in the final `done` event) before writing code.
+
+---
+
+## Deferred to Later Sprints
+
+| Item | Sprint | Why later |
+|---|---|---|
+| Inbound API rate limiting — per-client/API-key throttling on `/ask`, `/agent`, `/ask/stream`; HTTP 429 + `Retry-After` (Bucket4j or Resilience4j) | 9 | Needs client identity (auth/API keys) first; belongs with production hardening (ADR-023) |
 
 ---
 

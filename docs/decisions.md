@@ -152,3 +152,16 @@ The previous attempt added a Cohere `rerank-english-v3.0` cross-encoder step aft
 here *why* — was RRF alone evaluated and found insufficiently precise? Against what test
 questions? If reranking is added again, this entry should be replaced with the real reasoning
 and evidence, not backfilled from memory.
+
+---
+
+## ADR-023 — Split rate limiting: outbound LLM token budgets in Sprint 6, inbound API throttling in Sprint 9
+**Decision:** Treat rate limiting as two separate concerns.
+- **Outbound (LLM gateway)** — per-user token budgets, HTTP 429 backoff against OpenAI, fallback to a cheaper model. Built in Sprint 6 alongside model routing.
+- **Inbound (API edge)** — per-client / per-API-key request throttling on `/ask`, `/agent`, `/ask/stream`, returning HTTP 429 + `Retry-After`. Built in Sprint 9 with auth and production hardening.
+
+**Reason:** Outbound limiting and model routing are the same decision point — "which model, and may this request call one at all" — so they belong in one gateway layer. Inbound limiting needs client identity, which doesn't exist until auth lands in Sprint 9.
+**Limit by tokens, not requests:** one multi-tool agent question consumed ~29K prompt tokens (Sprint 5) versus a few thousand for `/ask`. Request counts treat these as equal; token budgets reflect real cost.
+**Sequencing:** design limits *after* streaming (6.1). Long-lived SSE connections make concurrent-stream caps matter more than requests/second.
+**Not to be confused with:** `BoundedVirtualExecutor`'s semaphore — that is concurrency admission control for retrieval, not rate limiting.
+**Source:** `docs/roadmap-gaps-checklist.md` flagged rate limiting and token budgets as missing from Sprint 6's gateway topic.
