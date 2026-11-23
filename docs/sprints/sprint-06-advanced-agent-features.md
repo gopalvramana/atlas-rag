@@ -73,13 +73,28 @@ Learn these before writing any code. Each concept explains a decision you are ab
 - Prioritise high-ranking chunks
 - Optimise context ordering
 
-### 6. Build Conversation API
+### 6. Agent-loop Context & Token Management
+
+Unfinished topic carried over from Sprint 5 — the ReAct loop works, but its context growth
+is unmanaged (one 5-iteration multi-tool question consumed ~29K prompt tokens).
+
+- Context accumulation across multiple LLM/tool interactions.
+- Token consumption by tool outputs.
+- Context-window limit handling.
+- Tool-result truncation and filtering.
+- Conversation-history pruning and summarization.
+
+**Status:** Not implemented — pending dedicated learning and implementation.
+
+Related: Task 1 (memory must fit the context window) and ADR-023 (token budgets) in `docs/decisions.md`.
+
+### 7. Build Conversation API
 - Support multi-turn conversations
 - Maintain session context
 - Return structured responses
 - Support streaming responses
 
-### 7. Evaluate Agent Behavior
+### 8. Evaluate Agent Behavior
 - Test multi-turn conversations
 - Verify memory retention
 - Validate structured outputs
@@ -92,6 +107,7 @@ Learn these before writing any code. Each concept explains a decision you are ab
 
 - Conversation Memory
 - Context Window Management
+- Agent-loop Token Management
 - Structured Outputs
 - JSON Schema Validation
 - Streaming Responses

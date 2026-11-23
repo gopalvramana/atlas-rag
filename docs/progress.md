@@ -175,7 +175,8 @@ Not started in code yet. Design-before-code discussion comes first.
 |---|---|:---:|
 | 6.1 | Streaming — `GET /api/v1/ask/stream`, SSE `Flux<String>`, final `event: done` carries full response (spec: `PLAN.md` §2.5) | ⬜ Next |
 | 6.2 | Conversation memory — design TBD | ⬜ |
-| 6.3 | Model routing + LLM token budgets — outbound rate limiting at the gateway layer: per-user token budgets, 429 backoff, cheaper-model fallback (ADR-023) — design TBD | ⬜ |
+| 6.3 | Agent-loop context & token management — context accumulation across LLM/tool turns, tool-output token cost, context-window limit handling, tool-result truncation/filtering, history pruning/summarization. Not implemented — pending dedicated learning and implementation (sprint-06 doc, Task 6) | ⬜ |
+| 6.4 | Model routing + LLM token budgets — outbound rate limiting at the gateway layer: per-user token budgets, 429 backoff, cheaper-model fallback (ADR-023) — design TBD | ⬜ |
 
 **Next step:** agree streaming design (e.g. `ChatClient.stream()` in `RagService`, how citations
 and token usage arrive in the final `done` event) before writing code.

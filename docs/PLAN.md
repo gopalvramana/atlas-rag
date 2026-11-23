@@ -172,6 +172,11 @@ Model split: Haiku for tool-call steps, Sonnet for final answer (cost vs. qualit
 cacheable) from UserMessage (dynamic — chunks + question) specifically so the system
 prompt can be prompt-cached later (Section 2.7).
 
+**Unfinished: agent-loop context & token management** — Sprint 5 built the loop but does not
+manage context growth across iterations (tool-output token cost, context-window limits,
+tool-result truncation, history pruning/summarization). Not implemented — pending dedicated
+learning and implementation in Sprint 6 (`docs/sprints/sprint-06-advanced-agent-features.md`, Task 6).
+
 ### 2.7 Prompt caching
 
 Cached prefix = system prompt (~350 tokens) + static framework-context block (~800 tokens)

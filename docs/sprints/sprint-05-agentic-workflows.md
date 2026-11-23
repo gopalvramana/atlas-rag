@@ -95,6 +95,10 @@ Learn these before writing any code. Each concept explains a decision you are ab
 - Tool Orchestration
 - Agent Execution Loop
 
+> **Deferred to Sprint 6:** agent-loop context & token management (context accumulation,
+> tool-output token cost, context-window limits, truncation, history pruning). Not part of
+> this sprint's scope — see `sprint-06-advanced-agent-features.md`, Task 6.
+
 ---
 
 ## Interview Readiness
