@@ -162,7 +162,7 @@ and evidence, not backfilled from memory.
 
 **Reason:** Outbound limiting and model routing are the same decision point — "which model, and may this request call one at all" — so they belong in one gateway layer. Inbound limiting needs client identity, which doesn't exist until auth lands in Sprint 9.
 **Limit by tokens, not requests:** one multi-tool agent question consumed ~29K prompt tokens (Sprint 5) versus a few thousand for `/ask`. Request counts treat these as equal; token budgets reflect real cost.
-**Sequencing:** design limits *after* streaming (6.1). Long-lived SSE connections make concurrent-stream caps matter more than requests/second.
+**Sequencing:** design limits *after* streaming (Sprint 6, Task 2). Long-lived SSE connections make concurrent-stream caps matter more than requests/second.
 **Not to be confused with:** `BoundedVirtualExecutor`'s semaphore — that is concurrency admission control for retrieval, not rate limiting.
 **Source:** `docs/roadmap-gaps-checklist.md` flagged rate limiting and token budgets as missing from Sprint 6's gateway topic.
 
@@ -171,4 +171,12 @@ and evidence, not backfilled from memory.
 ## ADR-024 — Production agent engineering goes in a separate Customer Support Agent project
 **Decision:** Advanced agent capabilities (tool orchestration, execution ordering, human-in-the-loop, tool security, failure handling, context management, observability, reliability, evaluation) belong to a separate future project, the Customer Support Agent (`docs/future-projects/customer-support-agent-implementation-plan.md`). Atlas RAG scope is unchanged.
 **Reason:** Atlas is the learning project for foundational RAG and agentic workflows. Folding production agent concerns into it would blur what each project teaches and stall the core RAG deliverable.
-**Overlap — context management:** kept in both, at different depths. Atlas Sprint 6.3 covers the fundamentals (loop and memory must fit the context window). The support agent's capability 6 covers production-grade token budgets, pruning and summarization. Each document cross-references the other.
+**Overlap — context management:** kept in both, at different depths. Atlas Sprint 6, Task 6 covers the fundamentals (loop and memory must fit the context window). The support agent's capability 6 covers production-grade token budgets, pruning and summarization. Each document cross-references the other.
+
+---
+
+## ADR-025 — Sprint 6 starts with a thin model gateway and rule-based routing
+**Decision:** Sprint 6 Task 1 adds a model gateway and routing before streaming, memory, and the other tasks. The gateway is a thin layer over Spring AI's own provider abstraction (`ChatClient`/`ChatModel` with portable `ChatOptions`). It has two model configurations (`fast`, `capable`), deterministic rule-based routing, whitelisted explicit selection, and per-request capture of usage, latency, and tokens.
+**Reason:** The sprint doc's fundamentals claimed model routing as a Sprint 6 feature, but no build task implemented it. Every later task makes LLM calls, so the gateway is the natural prerequisite. Building on Spring AI's abstraction avoids a second framework.
+**Bounded:** no failover, multi-provider balancing, response caching, or classifier/LLM routing. Those are production gateway concerns for the Customer Support Agent (ADR-024). Token-budget enforcement joins the gateway in Task 6, after streaming (ADR-023).
+**Evidence required:** routing must be compared against fixed-model baselines (`fast` only, `capable` only) on the Sprint 4 and 5 question sets before it is called an improvement.

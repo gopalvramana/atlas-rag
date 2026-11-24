@@ -14,7 +14,7 @@ not at the end of a session. See `docs/PLAN.md` Section 7 for why this rule exis
 | 3 | Hybrid Retrieval — keyword + vector + RRF + rerank + context selection | ✅ Done |
 | 4 | RAG Question Answering — LLM generation with retrieved context | ✅ Done |
 | 5 | Agentic AI — tool calling, ReAct loop | ✅ Done |
-| 6 | Advanced AI Applications — memory, streaming, model routing | 🟡 In progress |
+| 6 | Advanced AI Applications — model routing, streaming, memory | 🟡 In progress |
 | 7 | Evaluation + Observability | ⬜ Not started |
 | 8 | MCP Integration | ⬜ Not started |
 | 9 | Enterprise Production AI Architecture | ⬜ Not started |
@@ -171,15 +171,22 @@ final text answer.
 
 Not started in code yet. Design-before-code discussion comes first.
 
+Steps match the build tasks in `docs/sprints/sprint-06-advanced-agent-features.md`.
+
 | Step | What | Status |
 |---|---|:---:|
-| 6.1 | Streaming — `GET /api/v1/ask/stream`, SSE `Flux<String>`, final `event: done` carries full response (spec: `PLAN.md` §2.5) | ⬜ Next |
-| 6.2 | Conversation memory — design TBD | ⬜ |
-| 6.3 | Agent-loop context & token management — context accumulation across LLM/tool turns, tool-output token cost, context-window limit handling, tool-result truncation/filtering, history pruning/summarization. Not implemented — pending dedicated learning and implementation (sprint-06 doc, Task 6) | ⬜ |
-| 6.4 | Model routing + LLM token budgets — outbound rate limiting at the gateway layer: per-user token budgets, 429 backoff, cheaper-model fallback (ADR-023) — design TBD | ⬜ |
+| 6.1 | Model gateway & routing — thin provider-independent gateway over Spring AI `ChatOptions`; two model configs (`fast`/`capable`); rule-based routing + whitelisted explicit selection; usage/latency/token capture; routed vs fixed-model baseline comparison | ⬜ Next |
+| 6.2 | Streaming — `GET /api/v1/ask/stream`, SSE `Flux<String>`, final `event: done` carries full response (spec: `PLAN.md` §2.5) | ⬜ |
+| 6.3 | Prompt construction — templates, reduce unnecessary context | ⬜ |
+| 6.4 | Context management — chunk token budget, dedup, ordering | ⬜ |
+| 6.5 | Conversation memory — design TBD | ⬜ |
+| 6.6 | Agent-loop context & token management — context accumulation across LLM/tool turns, tool-output token cost, context-window limit handling, tool-result truncation/filtering, history pruning/summarization, per-request token budgets at the gateway (ADR-023). Not implemented — pending dedicated learning and implementation | ⬜ |
+| 6.7 | Structured outputs — schema, validation, failure rate per model config | ⬜ |
+| 6.8 | Conversation API — multi-turn, session context, structured + streaming | ⬜ |
+| 6.9 | Evaluate agent behaviour — incl. re-running routed vs fixed-model comparison | ⬜ |
 
-**Next step:** agree streaming design (e.g. `ChatClient.stream()` in `RagService`, how citations
-and token usage arrive in the final `done` event) before writing code.
+**Next step:** agree the model gateway & routing design (6.1) before writing code — see
+remaining decisions in the sprint doc's Task 1 and ADR-025.
 
 ---
 
@@ -197,7 +204,7 @@ and token usage arrive in the final `done` event) before writing code.
   with commits; it had not been updated since the rebuild started).
 - 2026-11-23 — Customer Support Agent planned as a separate future project
   (`docs/future-projects/customer-support-agent-implementation-plan.md`); Atlas scope unchanged.
-  Context management is covered at fundamentals level in Sprint 6.3 and continued there (ADR-024).
+  Context management is covered at fundamentals level in Sprint 6, Task 6 and continued there (ADR-024).
 - 2026-11-23 — Sprint 5 closed out: Agent Q&A added to `docs/interview-prep.md`. Known agent gaps
   (no iteration cap, unmanaged context growth, unlogged tool errors, raw error text to the model,
   sequential tool-call assumption) are left in Atlas on purpose and mapped to Customer Support
