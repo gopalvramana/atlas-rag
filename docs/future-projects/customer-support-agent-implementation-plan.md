@@ -29,6 +29,21 @@ Every capability below is filled in using the same five sections before any code
 
 ---
 
+## Gaps carried over from Atlas RAG
+
+Known weaknesses in the Atlas Sprint 5 agent, left in Atlas on purpose and solved here.
+Details: `docs/interview-prep.md`, Agent section, "Honest gaps".
+
+| Atlas gap | Solved in capability |
+|---|---|
+| No cap on tool-call iterations per request | 8. Reliability |
+| Context grows unmanaged across iterations (~29K prompt tokens for one 5-iteration question) | 6. Context management (fundamentals also in Atlas Sprint 6, Task 6) |
+| Tool exceptions returned to the model but never logged; no retryable vs fatal split | 5. Failure handling |
+| Raw external error text (GitHub response body) passed to the model | 4. Tool security |
+| Tool-usage recording assumes tool calls run one at a time (plain `ArrayList`) | 2. Execution ordering |
+
+---
+
 ## Capability Roadmap
 
 ### 1. Tool orchestration

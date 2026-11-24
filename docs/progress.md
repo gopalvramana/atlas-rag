@@ -198,3 +198,7 @@ and token usage arrive in the final `done` event) before writing code.
 - 2026-11-23 — Customer Support Agent planned as a separate future project
   (`docs/future-projects/customer-support-agent-implementation-plan.md`); Atlas scope unchanged.
   Context management is covered at fundamentals level in Sprint 6.3 and continued there (ADR-024).
+- 2026-11-23 — Sprint 5 closed out: Agent Q&A added to `docs/interview-prep.md`. Known agent gaps
+  (no iteration cap, unmanaged context growth, unlogged tool errors, raw error text to the model,
+  sequential tool-call assumption) are left in Atlas on purpose and mapped to Customer Support
+  Agent capabilities.
