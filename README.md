@@ -61,6 +61,10 @@ atlas-evals       Eval dataset and CI runner
 
 Rebuild in progress — see [`docs/progress.md`](docs/progress.md) for the live checklist.
 
+A follow-on project, a production-grade Customer Support Agent, is planned separately in
+[`docs/future-projects/customer-support-agent-implementation-plan.md`](docs/future-projects/customer-support-agent-implementation-plan.md).
+It is not part of Atlas's scope.
+
 ## Stack
 
 Java 21, Spring Boot 3.4.5, Spring AI 1.1.5, PostgreSQL + pgvector, Anthropic Claude

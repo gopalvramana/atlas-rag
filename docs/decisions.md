@@ -165,3 +165,10 @@ and evidence, not backfilled from memory.
 **Sequencing:** design limits *after* streaming (6.1). Long-lived SSE connections make concurrent-stream caps matter more than requests/second.
 **Not to be confused with:** `BoundedVirtualExecutor`'s semaphore — that is concurrency admission control for retrieval, not rate limiting.
 **Source:** `docs/roadmap-gaps-checklist.md` flagged rate limiting and token budgets as missing from Sprint 6's gateway topic.
+
+---
+
+## ADR-024 — Production agent engineering goes in a separate Customer Support Agent project
+**Decision:** Advanced agent capabilities (tool orchestration, execution ordering, human-in-the-loop, tool security, failure handling, context management, observability, reliability, evaluation) belong to a separate future project, the Customer Support Agent (`docs/future-projects/customer-support-agent-implementation-plan.md`). Atlas RAG scope is unchanged.
+**Reason:** Atlas is the learning project for foundational RAG and agentic workflows. Folding production agent concerns into it would blur what each project teaches and stall the core RAG deliverable.
+**Overlap — context management:** kept in both, at different depths. Atlas Sprint 6.3 covers the fundamentals (loop and memory must fit the context window). The support agent's capability 6 covers production-grade token budgets, pruning and summarization. Each document cross-references the other.

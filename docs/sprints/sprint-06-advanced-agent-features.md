@@ -88,6 +88,10 @@ is unmanaged (one 5-iteration multi-tool question consumed ~29K prompt tokens).
 
 Related: Task 1 (memory must fit the context window) and ADR-023 (token budgets) in `docs/decisions.md`.
 
+**Scope boundary:** Atlas covers the fundamentals only. Production-grade budgets, pruning and
+summarization policies continue in the Customer Support Agent project, capability 6
+(`docs/future-projects/customer-support-agent-implementation-plan.md`). See ADR-024.
+
 ### 7. Build Conversation API
 - Support multi-turn conversations
 - Maintain session context

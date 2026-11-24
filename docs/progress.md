@@ -195,3 +195,6 @@ and token usage arrive in the final `done` event) before writing code.
 
 - 2026-11-23 — `PLAN.md` §3 tracker synced with actual progress (steps 1–5 and 7 marked done
   with commits; it had not been updated since the rebuild started).
+- 2026-11-23 — Customer Support Agent planned as a separate future project
+  (`docs/future-projects/customer-support-agent-implementation-plan.md`); Atlas scope unchanged.
+  Context management is covered at fundamentals level in Sprint 6.3 and continued there (ADR-024).
