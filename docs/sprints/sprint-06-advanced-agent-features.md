@@ -78,6 +78,41 @@ route each request to one of two model configurations.
   model ID, routing reason, latency, and prompt, completion, and total tokens.
 - Compare routing decisions against a fixed-model baseline.
 
+**Architecture Decisions (agreed 2026-11-26)**
+
+1. **Provider abstraction** — Use Spring AI's existing provider abstraction (`ChatClient`,
+   `ChatModel`, `ChatOptions`). Do not build a separate provider abstraction. Keep
+   provider-specific details isolated behind Spring AI integrations.
+
+2. **Framework abstraction** — Do not introduce an additional abstraction to hide Spring AI
+   behind a custom framework-independent interface. Use Spring AI directly within the Model
+   Gateway. Keep the gateway's application-facing contract reasonably independent of Spring AI
+   where practical.
+
+3. **Model routing** — Implement model routing within Atlas using a dedicated `ModelRouter`
+   component with a single responsibility: deciding which configured model profile should handle
+   a request. Start with deterministic, rule-based routing. Use endpoint (`/ask` vs `/agent`)
+   and simple query signals as routing inputs. Configure at least two model profiles: `fast` and
+   `capable`. Do not introduce classifier-based or LLM-based routing in this sprint.
+
+4. **Model gateway** — Implement a dedicated `ModelGateway` component responsible for invoking
+   the selected model through Spring AI and returning the response. It must not make
+   model-routing decisions.
+
+5. **Usage tracking** — Implement basic usage tracking: model profile, model ID, latency, and
+   prompt/completion/total token counts.
+
+6. **Advanced gateway capabilities — deferred** — Provider failover, multi-provider load
+   balancing, advanced cost governance, token budgets, and enterprise security policies are
+   deferred to the Customer Support Agent project, where established gateway products (LiteLLM,
+   Portkey, Kong) will be evaluated rather than custom infrastructure built.
+
+**Implementation order**
+1. `ModelRouter`
+2. `ModelGateway`
+3. Integrate both with `RagService` and `AtlasAgent`
+4. Add usage tracking and validate routing behaviour
+
 **Acceptance criteria**
 - `RagService` and `AtlasAgent` call the LLM only through the gateway. No other class chooses a
   model.
@@ -103,9 +138,6 @@ route each request to one of two model configurations.
 - Inbound API rate limiting (Sprint 9, ADR-023).
 
 **Open design decisions (agree before code)**
-- **Gateway shape:** an Atlas `ModelGateway` class wrapping `ChatClient`, or a Spring AI
-  advisor that applies routing and records usage. An advisor reuses the framework's extension
-  point. A class is easier to unit-test and to explain.
 - **Second configuration:** a second OpenAI model (no new dependency) or a second provider such
   as Anthropic (genuinely tests provider independence, but adds a starter and an API key).
 - **Routing rule:** which signals to use beyond endpoint (`/ask` vs `/agent`), e.g. query
