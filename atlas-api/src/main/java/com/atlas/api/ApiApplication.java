@@ -1,14 +1,17 @@
 package com.atlas.api;
 
+import com.atlas.core.config.ModelProperties;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {"com.atlas.api", "com.atlas.retrieval", "com.atlas.agent"})
 @EntityScan(basePackages = "com.atlas.core.model")
 @EnableJpaRepositories(basePackages = "com.atlas.core.repository")
+@EnableConfigurationProperties(ModelProperties.class)
 public class ApiApplication {
 
     public static void main(String[] args) {
